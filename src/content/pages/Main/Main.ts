@@ -13,7 +13,7 @@ export type MenuItem = {
 
 export type Subjects = Record<string, MenuItem[]>;
 
-type ParsedItem = Pick<MenuItem, "title" | "text" | "link">;
+type ParsedItem = Pick<MenuItem, "title" | "text" | "link"> & { semester: string }
 
 type CoursesInfo = {
     semester: string;
@@ -44,16 +44,9 @@ export class Main extends Logged {
     async initialise() {
         await super.initialise();
 
-        const center = document.querySelector<HTMLElement>("body > center");
-        if (center) {
-            center.style.display = "none";
-        }
-
         // collect all elements
         const items = parseItems();
         if (items.length === 0) {
-            if (!center) return;
-            center.style.display = "block";
             return;
         }
 
@@ -72,14 +65,8 @@ export class Main extends Logged {
         items.forEach((item) => {
             const icon = getMenuIcon(item.title);
 
-            // create semester code from subject code
-            const semester = item.text.substring(
-                item.text.indexOf("(") + 1,
-                item.text.indexOf(")"),
-            );
-
             // settings have no semester
-            if (semester === "") {
+            if (item.semester === "Nástroje") {
                 // overrides
                 if (item.title === "FAQ") {
                     item.text = "Často kladené dotazy";
@@ -96,17 +83,16 @@ export class Main extends Logged {
                 return;
             }
 
-            const footer = "20" + semester;
-            const semesterKey = `B${semester.split("/")[0]}${
-                semester.includes("ZS") ? 1 : 2
-            }`;
+            let year = item.semester.match(/\d+\/\d+/)[0];
+
+            const footer = item.semester;
+            const semesterKey = `B${year.split("/")[0].substring(2)}${item.semester.includes("Zimní") ? 1 : 2
+                }`;
             const subjectHomepage =
                 subjectInfo.courses[item.title]?.homepage ??
                 `https://courses.fit.cvut.cz/${item.title}`;
 
-            if (!subjects[semesterKey]) {
-                subjects[semesterKey] = [];
-            }
+            subjects[semesterKey] ??= [];
             subjects[semesterKey].push({
                 title: item.title,
                 text: item.text.substring(0, item.text.indexOf("(")),
@@ -118,7 +104,7 @@ export class Main extends Logged {
         });
 
         const container = document.createElement("div");
-        document.body.insertBefore(container, center);
+        document.querySelector("div.navLink.navbar")?.insertAdjacentElement("afterend", container);
         new MainComponent({
             target: container,
             props: { subjects, settings },
@@ -127,29 +113,26 @@ export class Main extends Logged {
 }
 
 function parseItems(): ParsedItem[] {
-    return [
-        ...document.querySelectorAll<HTMLTableRowElement>(
-            "body > center > table > tbody > tr",
-        ),
-    ]
-        .map((e: HTMLElement) => {
-            const ch = e.children[1]?.children[0]?.children[0]?.children[0];
-            if (!(ch instanceof HTMLAnchorElement)) {
-                console.error("Subject button not found");
-                return null;
-            }
-            const firstChild = e.children[0];
-            if (!(firstChild instanceof HTMLElement)) {
-                console.error("Subject name not found");
-                return null;
-            }
-            return {
-                title: ch.innerText,
-                text: firstChild.innerText,
-                link: ch.href,
-            };
-        })
-        .filter((e) => e !== null) as ParsedItem[];
+    let items: ParsedItem[] = [];
+
+    document.querySelectorAll("details.menuList").forEach(
+        (semester) => {
+            semester.querySelectorAll("div.bigButLink").forEach((subject) => {
+                const link = subject.querySelector("a");
+                const name = subject.querySelector("span");
+                const title = subject.nextElementSibling?.querySelector("span");
+                items.push({
+                    title: name?.innerText ?? "",
+                    text: title?.innerText ?? "",
+                    link: link?.href ?? "",
+                    semester: semester.querySelector("summary")?.innerText ?? ""
+                });
+            })
+            semester.remove();
+        }
+    )
+
+    return items;
 }
 
 function getMenuIcon(title: string) {

@@ -64,10 +64,6 @@ select.std.w200[name="UID_UNIVERSITY"] {
     width: -webkit-fill-available;
 }
 
-.navbar > tbody > tr > td > table {
-    padding: 0;
-}
-
 /* Login page */
 
 .app_name {

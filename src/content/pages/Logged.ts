@@ -30,6 +30,7 @@ export class Logged implements Page {
 
     async initialise() {
         this.header.className += " navbar";
+        this.header.style.zIndex = "2";
         // add scroll to top button
         document.body.innerHTML += this.topButton;
         if (this.tButton) {
