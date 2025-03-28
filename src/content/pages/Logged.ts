@@ -21,7 +21,7 @@ export class Logged implements Page {
 
     constructor(protected settings: ExtensionSettings) {
         this.tButton = document.getElementById("upTop") as HTMLElement;
-        const header = document.querySelector<HTMLElement>("body > table");
+        const header = document.querySelector<HTMLElement>("body > .navLink");
         if (!header) {
             throw new Error("Header not found");
         }
