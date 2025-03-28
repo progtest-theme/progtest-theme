@@ -21,7 +21,7 @@ export class Login implements Page {
 
             document
                 .querySelector(
-                    "#main > tbody > tr:nth-child(2) > td.rtbCell > select",
+                    "select.std.fw[name=UID_UNIVERSITY]",
                 )
                 ?.childNodes.forEach((e) => {
                     if (!(e instanceof HTMLOptionElement)) return;
