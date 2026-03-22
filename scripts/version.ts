@@ -42,7 +42,7 @@ async function addUpdateToList(updateFile: string) {
 
     const updateEntry = {
         version,
-        update_link: `https://github.com/progtest-theme/progtest-theme/releases/download/${version}/progtest_themes-${version}-an+fx.xpi`
+        update_link: `https://github.com/progtest-theme/progtest-theme/releases/download/${version}/progtest_themes-${version}-firefox.xpi`
     };
 
     const updateJson = await Bun.file(updateFile).json();
