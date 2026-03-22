@@ -5,7 +5,7 @@ export const ENTRYPOINTS = [
     "./src/content/loader.ts",
     "./src/content/start.ts",
     "./src/settings/index.ts",
-    "./src/dev/index.ts",
+    "./src/dev/index.ts"
 ] as const;
 
 export const BUILD_DIR = "./build" as const;

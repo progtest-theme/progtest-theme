@@ -4,13 +4,7 @@ import { DEFAULT_SETTINGS } from "./settings";
 async function migrateSettingNames(): Promise<void> {
     return new Promise((resolve) => {
         chrome.storage.sync.get(
-            [
-                "selectedTheme",
-                "autoHide",
-                "notifications",
-                "highlighting",
-                "sounds",
-            ],
+            ["selectedTheme", "autoHide", "notifications", "highlighting", "sounds"],
             function (items) {
                 if (items === undefined) {
                     return resolve();
@@ -36,7 +30,7 @@ async function migrateSettingNames(): Promise<void> {
                     delete items.sounds;
                 }
                 chrome.storage.sync.set(items, resolve);
-            },
+            }
         );
     });
 }
@@ -48,16 +42,10 @@ const syncSettings = async () => {
     console.log("localSettings", localSettings);
     console.log("syncSettings", syncSettings);
     if (localSettings !== syncSettings) {
-        if (
-            localSettings === DEFAULT_SETTINGS &&
-            syncSettings !== DEFAULT_SETTINGS
-        ) {
+        if (localSettings === DEFAULT_SETTINGS && syncSettings !== DEFAULT_SETTINGS) {
             await chrome.storage.sync.set(localSettings);
         }
-        if (
-            localSettings !== DEFAULT_SETTINGS &&
-            syncSettings === DEFAULT_SETTINGS
-        ) {
+        if (localSettings !== DEFAULT_SETTINGS && syncSettings === DEFAULT_SETTINGS) {
             await chrome.storage.local.set(syncSettings);
         }
     }

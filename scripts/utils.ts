@@ -1,6 +1,7 @@
 import archiver from "archiver";
-import { cp, rm, exists, mkdir, readdir, stat } from "fs/promises";
 import { createWriteStream } from "fs";
+import { cp, exists, mkdir, readdir, rm, stat } from "fs/promises";
+
 import { BUILD_DIR } from "./constants";
 
 export async function* walkDir(dir: string): AsyncGenerator<string> {
@@ -22,7 +23,7 @@ export async function copyDirectory(
     options?: {
         filter?: (path: string) => boolean;
         verbose?: boolean;
-    },
+    }
 ) {
     // cut trailing slash if present
     from = from.replace(/\/$/, "");
@@ -33,12 +34,9 @@ export async function copyDirectory(
             continue;
         }
 
-        const directoryPath = filePath
-            .substring(0, filePath.lastIndexOf("/"))
-            .replace(from, to);
+        const directoryPath = filePath.substring(0, filePath.lastIndexOf("/")).replace(from, to);
         if (!(await exists(directoryPath))) {
-            options?.verbose &&
-                console.log(`Creating directory ${directoryPath}`);
+            options?.verbose && console.log(`Creating directory ${directoryPath}`);
             await mkdir(directoryPath, { recursive: true });
         }
 
@@ -54,14 +52,14 @@ export async function zipDirectory(
     options?: {
         zipDestPath?: string;
         useSystemUtilities?: boolean;
-    },
+    }
 ) {
     if (options?.useSystemUtilities) {
         console.info("Zipping with system utilities");
         await rm(outPath, { force: true });
         // . + ./ => ../
         const proc = Bun.spawn(["zip", "-r", `.${outPath}`, "."], {
-            cwd: BUILD_DIR,
+            cwd: BUILD_DIR
         });
         await proc.exited;
         const output = await new Response(proc.stdout).text();

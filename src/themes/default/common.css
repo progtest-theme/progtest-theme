@@ -2,20 +2,15 @@
 @import url("https://cdn.jsdelivr.net/npm/hack-font@3.3.0/build/web/hack-subset.css");
 @import url("https://cdn.jsdelivr.net/npm/@fontsource/noto-color-emoji@5.0.15/index.min.css");
 
-.install-message {
-    display: none;
-}
-
-/** global layout */
-
 :root {
     --font-sans: "Open Sans", ui-sans-serif, system-ui, -apple-system,
-        BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial,
-        "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji",
-        "Segoe UI Symbol", "Noto Color Emoji";
+    blinkmacsystemfont, "Segoe UI", roboto, "Helvetica Neue", arial,
+    "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji",
+    "Segoe UI Symbol", "Noto Color Emoji";
     --font-monospace: "Hack", ui-monospace, "Apple Color Emoji",
-        "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
-    font-family: var(--font-sans);
+    "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+
+    font-family: var(--font-sans), serif;
 }
 
 html {
@@ -30,16 +25,37 @@ body {
     background-attachment: fixed;
     background-size: cover;
     padding-top: 60px;
+    color: #000000;
+    background-color: #ffffff;
+    background-image: url("../assets/background-light.png");
+
+    &.dark {
+        color: #ffffff;
+        background-color: #000000;
+        background-image: url("../assets/background-dark.png");
+    }
 }
 
 hr {
     border: none;
     height: 1px;
-    background-color: rgba(0, 0, 0, 0.175);
+    background-color: rgb(0, 0, 0, 0.175);
 }
 
 a {
     text-decoration: none;
+
+    body.dark & {
+        color: #03a9f4;
+
+        &:visited {
+            color: #c384e2;
+        }
+
+        &:active {
+            color: #ec407a;
+        }
+    }
 }
 
 select {
@@ -53,474 +69,51 @@ form {
     margin: 0;
 }
 
-input,
-button,
-select,
-tr {
-    font-size: 12px;
-}
-
-select.std.w200[name="UID_UNIVERSITY"] {
-    width: -webkit-fill-available;
-}
-
-.navbar > tbody > tr > td > table {
-    padding: 0;
-}
-
-/* Login page */
-
-.app_name {
-    text-align: center;
-    font-size: 4.5rem;
-    font-weight: 300;
-    line-height: 0.6;
-    margin-top: -38px;
-    letter-spacing: 2px;
-}
-
-.app_name > b {
-    font-weight: 500;
-}
-
-.loginForm > center > div > div > table:before {
-    content: "";
-    width: 260px;
-    height: 90%;
-    position: absolute;
-    top: 5%;
-    left: -250px;
-    box-shadow: 0 5px 23px 0 rgba(0, 0, 0, 0.45);
-    z-index: -1;
-    border-radius: 7px;
-}
-
-#uniSel {
-    position: absolute;
-    top: 260px;
-    left: calc(50% - 300px);
-    width: 250px;
-    font-size: 12pt;
-}
-
-.uniVal[active] {
-    padding-left: 12px;
-    border-left: 3px solid #ffeb3b;
-    font-weight: 500;
-    background: rgba(255, 255, 255, 0.075);
-    box-shadow: 0 1px 4px -3px rgba(0, 0, 0, 0.5);
-}
-
-.uniVal {
-    padding: 5px 0 5px 15px;
-    cursor: pointer;
-}
-
-.uniVal:hover {
-    background: rgba(255, 255, 255, 0.125);
-}
-
-.loginForm td {
-    background: transparent !important;
-    border: none !important;
-}
-
-.loginForm table {
-    border: none !important;
-    box-shadow: none !important;
-    border-radius: 7px !important;
-}
-
-.loginForm .insBox {
-    position: absolute;
-    width: 350px;
-    margin: 0;
-    height: 380px;
-    border-radius: 7px;
-    box-shadow: 0 2px 42px 0 rgba(0, 0, 0, 0.28);
-    left: calc(50% - 50px);
-    top: 160px;
-}
-
-.loginForm div.outButton.w120 input,
-.loginForm a.butLink {
-    position: absolute;
-    width: 120px;
-    color: #fff;
-    padding: 10px 0;
-    border-radius: 3px;
-    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.25);
-    border: none;
-    outline-color: #004d40;
-    font-size: 12pt;
-    left: calc(50% - 60px);
-    bottom: 80px;
-    cursor: pointer;
-    background-color: #009688;
-}
-
-.loginForm a.butLink:focus {
-    outline-offset: 0;
-    outline-style: initial;
-    outline-width: 4.8px;
-}
-
-.loginForm td:nth-child(2) > div.outButton.w120 input {
-    bottom: 25px;
-    font-size: 10pt;
-    width: 100px;
-    left: calc(50% - 50px);
-    padding: 7px 0;
-}
-
-.loginForm div.outButton.w120 input:hover,
-.loginForm a.butLink:hover {
-    background: #26a69a;
-}
-
-.loginForm div.outButton.w120 input:active,
-.loginForm a.butLink:active {
-    background: #00796b;
-}
-
-.loginForm .outBox > table {
-    padding: 25px;
-    text-align: center;
-}
-
-.loginForm select[name="lang"] {
-    outline: none;
-    background: none;
-    border: none;
-    border-radius: 0;
-    padding-right: 26px;
-    font-weight: 600;
-    padding-bottom: 4px;
-    cursor: pointer;
-}
-
-#langGlobe {
-    position: absolute;
-    top: 9px;
-    right: 28px;
-    z-index: -1;
-}
-
-.loginForm #shib2 > td {
-    padding-top: 40px;
-    font-size: 12pt;
-}
-
-.loginForm #ldap2 > td:nth-child(1) > b,
-.loginForm #ldap1 > td:nth-child(1) > b {
-    font-weight: 100;
-    position: absolute;
-    left: 50px;
-    font-size: 16pt;
-    cursor: pointer;
-    z-index: 2;
-    width: 250px;
-    text-align: left;
-    transition:
-        font-size 0.2s ease,
-        top 0.2s ease;
-    padding: 1px 0;
-}
-
-.loginForm #ldap1 > td:nth-child(1) > b {
-    top: 70px;
-}
-
-.loginForm #ldap1 > td:nth-child(1) > b[moved] {
-    top: 50px;
-    font-size: 10pt;
-    cursor: default;
-    background: transparent;
-    border: none;
-}
-
-.loginForm #ldap2 > td:nth-child(1) > b {
-    top: 130px;
-}
-
-.loginForm #ldap2 > td:nth-child(1) > b[moved] {
-    top: 110px;
-    font-size: 10pt;
-    cursor: default;
-    background: transparent;
-    border: none;
-}
-
-.loginForm input.std.w200 {
-    border: none;
-    outline: none;
-    font-size: 16pt;
-    position: absolute;
-    left: 50px;
-    width: 250px;
-    background: transparent !important;
-    font-weight: 400 !important;
-    padding: 1px 0 !important;
-    min-width: 250px !important;
-}
-
-.loginForm #ldap1 > td:nth-child(2) > input {
-    top: 70px;
-}
-
-.loginForm #ldap2 > td:nth-child(2) > input {
-    top: 130px;
-}
-
-.loginForm .outBox > table > tbody > tr:nth-child(1) {
-    position: absolute;
-    left: -115px;
-    top: 25px;
-}
-
-.loginForm .outBox > table > tbody > tr:nth-child(2) {
-    display: none;
-}
-
-/** header */
-
-body > table {
-    z-index: 100;
-    min-height: 38px !important;
-    padding: 8px 16px;
-    position: fixed;
-    top: 0;
-    transition: padding 0.1s ease;
-    box-shadow: 0 -3px 3px 3px rgba(0, 0, 0, 0.5);
-}
+table {
+    background-color: #fff;
 
-tr[height="25"] {
-    height: initial;
+    body.dark & {
+        background-color: #2d2d2d;
+    }
 }
 
-body > table td {
-    padding: 8px 0;
-}
-
-body > table * {
-    color: rgba(255, 255, 255, 0.5) !important;
-    font-weight: normal !important;
-    font-size: 16px;
-    padding: 15px 0;
-}
-
-.menuSep {
-    padding: 0;
-}
-
-body > table b {
-    color: rgba(255, 255, 255, 0.75) !important;
-}
-
-body > table a:hover {
-    color: #fff !important;
-}
-
-body > table td > span {
-    visibility: hidden;
-}
-
-body > table td > span > * {
-    visibility: initial;
-}
-
-span.navLink b {
-    color: #fff !important;
-}
-
-body > table td:nth-child(1) > span > *:nth-child(1) {
-    font-size: 20px;
-    color: #fff !important;
-}
-
-.topLayout {
-    width: 90%;
-}
-
-#upTop {
-    position: fixed;
-    bottom: 20px;
-    right: 20px;
-    width: 48px;
-    height: 48px;
-    background: #455a64;
-    border-radius: 100%;
-    box-shadow: rgba(0, 0, 0, 0.5) 0 3px 7px -2px;
-    cursor: pointer;
-    transition: transform 0.2s ease;
-    transform: scale(0);
-    user-select: none;
-    fill: #ffffff;
-}
-
-#refProgress {
-    height: 4px !important;
-    position: fixed;
-    top: 0;
-    left: 0;
-    z-index: 200;
-    transition: width 1s linear 0s;
-}
-
-.notify {
-    display: inline-block;
-    width: 25px;
-    height: 25px;
-    padding: 0;
-    vertical-align: top;
-    margin-right: 30px;
-    cursor: pointer;
-    user-select: none;
-}
-
-.notify:hover {
-    filter: brightness(1.5);
-}
-
-.notify.off {
-    background: url("assets/notifications_none.svg");
-}
-
-.notify.on {
-    background: url("assets/notifications_active.svg");
-}
-
-.notifications {
-    position: fixed;
-    top: 70px;
-    right: 25px;
-    width: 250px;
-    min-height: 25px;
-    border: thin solid;
-    box-shadow: 0 2px 5px -1px #000;
-    border-radius: 5px;
-    z-index: 500;
-    transition: opacity linear 0.1s;
-    opacity: 1;
-    overflow: hidden;
-}
+select {
+    outline-color: #2e2e2e;
 
-.notifications-hide {
-    opacity: 0;
-    visibility: hidden;
-}
-
-.notifications > a {
-    display: block;
-    padding: 6px 12px;
-    font-size: 16px;
-    font-weight: 100;
-    border-bottom: thin solid;
-    position: relative;
-}
-
-.notifications > b {
-    text-align: center;
-    width: 100%;
-    display: inline-block;
-    font-size: 17px;
-    font-weight: 600;
-    padding: 14px 0;
-}
-
-.notifications > a > b {
-    font-size: 18px;
-    font-weight: 600;
-}
-
-/** subject select */
-
-.icon {
-    width: 70px;
-    height: 70px;
-    background-size: cover;
-    background-repeat: no-repeat;
-    position: absolute;
-    right: 14px;
-    top: 14px;
-}
-
-.icon-aag {
-    background-image: url("./assets/icons/aag.svg");
-}
-
-.icon-ag1 {
-    background-image: url("./assets/icons/ag1.svg");
-}
-
-.icon-osy {
-    background-image: url("./assets/icons/osy.svg");
-}
-
-.icon-pa1 {
-    background-image: url("./assets/icons/pa1.svg");
-}
-
-.icon-pa2 {
-    background-image: url("./assets/icons/pa2.svg");
-}
-
-.icon-pdp {
-    background-image: url("./assets/icons/pdp.svg");
-}
-
-.icon-pjv {
-    background-image: url("./assets/icons/pjv.svg");
-}
-
-.icon-ps1 {
-    background-image: url("./assets/icons/ps1.svg");
-}
-
-.icon-pyt {
-    background-image: url("./assets/icons/pyt.svg");
-}
-
-.icon-setting {
-    background-image: url("./assets/icons/settings.svg");
-}
-
-.icon-faq {
-    background-image: url("./assets/icons/faq.svg");
-}
-
-.icon-compile {
-    background-image: url("./assets/icons/compile.svg");
-}
+    body.dark & {
+        color: #fff;
+        background: #2b2b2b;
+        outline-color: #a5a5a5;
 
-.icon-unknown {
-    background-image: url("./assets/icons/unknown.svg");
+        & > option {
+            background-color: #242424;
+        }
+    }
 }
 
 /** item header */
 
 table.header {
-    background: none !important;
-    background-color: #fff;
-    padding-bottom: 8px;
+    padding: 12px;
     margin-bottom: 20px;
 }
 
-td.header {
+table.header td {
+    font-size: 1rem;
     position: relative;
 }
 
-td.header > b {
-    font-size: 3.5rem;
+table.header td > b {
+    font-size: 1.25rem;
     font-weight: 300;
     line-height: 1.2;
 }
 
-td.header > small {
+table.header td > small {
     position: absolute;
     bottom: 0;
     right: 0;
-    font-size: 2rem;
+    font-size: 0.5rem;
     font-weight: 100;
 }
 
@@ -528,17 +121,34 @@ td[valign="top"] {
     vertical-align: middle;
 }
 
-.outBox > table:not(.header) {
-    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075) /*!important*/;
-    border: solid thin rgba(0, 0, 0, 0.125);
+table:not(.header) {
+    box-shadow: 0 0.125rem 0.25rem rgb(0, 0, 0, 0.075) /*!important*/;
+    border: solid thin rgb(0, 0, 0, 0.125);
     border-radius: 3px;
 }
 
 /** item body */
 
-.rtbCell > .outButton,
-.rtbCell > .but1 {
+#maintable div.bUpd input {
+    text-align: center;
+}
+
+form > center > div:first-child td:has(div.bUpd),
+form > center > div:first-child td:has(div.bLink) {
+    padding: 0;
+}
+
+form > center > div:first-child td > div.bUpd,
+form > center > div:first-child td > div.bLink {
+    width: 80%;
+    height: 100%;
+    padding: 0;
     float: right;
+}
+
+form > center > div:first-child td > div.bUpd input,
+form > center > div:first-child td > div.bLink a {
+    padding: 8px 0;
 }
 
 .rtbCell > table {
@@ -564,7 +174,7 @@ td[valign="top"] {
 }
 
 .lrtCell {
-    border-bottom: solid thin rgba(0, 0, 0, 0.125) !important;
+    border-bottom: solid thin rgb(0, 0, 0, 0.125) !important;
 }
 
 .ltCell {
@@ -578,8 +188,8 @@ td[valign="top"] {
 .lrtbCell {
     font-size: 10pt;
     border: none !important;
-    border-top: solid thin rgba(0, 0, 0, 0.125) !important;
-    border-bottom: solid thin rgba(0, 0, 0, 0.125) !important;
+    border-top: solid thin rgb(0, 0, 0, 0.125) !important;
+    border-bottom: solid thin rgb(0, 0, 0, 0.125) !important;
     padding: 10px !important;
 }
 
@@ -624,8 +234,8 @@ td[valign="top"] {
 .tbEditSepCell {
     padding: 8px 10px;
     font-size: 1.2em;
-    border-bottom: solid thin rgba(0, 0, 0, 0.125);
-    color: #fff;
+    border-bottom: solid thin rgb(0, 0, 0, 0.125);
+    color: #ffffff;
 }
 
 .dropDownHide {
@@ -636,19 +246,19 @@ td[valign="top"] {
     cursor: pointer;
 }
 
-form > center > div:not(:nth-child(1)) .lrtbCell ul {
+form > center > div:not(:nth-child(1)) tr:nth-child(4) ul {
     list-style: none;
     padding-inline-start: 10px;
     margin-top: 3px;
 }
 
-form > center > div:not(:nth-child(1)) .lrtbCell li {
+form > center > div:not(:nth-child(1)) tr:nth-child(4) li {
     font-weight: 700;
     letter-spacing: 0.1px;
     padding: 5px 0;
 }
 
-form > center > div:not(:nth-child(1)) .lrtbCell li:last-child {
+form > center > div:not(:nth-child(1)) tr:nth-child(4) li:last-child {
     font-weight: 700;
     font-size: 11pt;
 }
@@ -664,7 +274,7 @@ li.testRes > ul {
     padding-left: 10px;
 }
 
-@media only screen and (max-width: 1000px) {
+@media only screen and (width <= 1000px) {
     li.testRes > ul {
         grid-template-columns: 50% 50%;
     }
@@ -686,7 +296,7 @@ li.testRes a {
     padding: 0 6px 2px;
     display: inline-block;
     font-weight: 600;
-    background-color: #fff;
+    background-color: #ffffff;
     margin-left: 14px;
 }
 
@@ -709,7 +319,7 @@ li.testRes > ul > li input[type="checkbox"] {
     margin-right: 5px;
 }
 
-li.testRes:before {
+li.testRes::before {
     width: 25px;
     display: inline-block;
     text-align: center;
@@ -724,7 +334,7 @@ li.testRes > div.badges {
     align-items: flex-end;
 }
 
-@media only screen and (max-width: 1000px) {
+@media only screen and (width <= 1000px) {
     li.testRes > div.badges {
         flex-flow: column;
     }
@@ -734,12 +344,12 @@ badge {
     font-family: var(--font-monospace);
     font-size: 13px;
     display: inline-block;
-    color: #fff;
+    color: #ffffff;
     line-height: 1;
     margin: 1px 3px;
     height: 19px;
     font-weight: 300;
-    text-shadow: 0 1px 1px rgba(0, 0, 0, 0.6);
+    text-shadow: 0 1px 1px rgb(0, 0, 0, 0.6);
 }
 
 badge b {
@@ -782,7 +392,7 @@ badge.danger > label {
 }
 
 badge.light > label {
-    background: #777;
+    background: #777777;
 }
 
 badge.info > label {
@@ -797,18 +407,18 @@ span.testType {
     font-weight: 500;
 }
 
-li.testAOK:before {
+li.testAOK::before {
     content: "\26A0";
-    color: #aaa;
+    color: #aaaaaa;
 }
 
 li.testAOK {
     border-left: #ffc107 4px solid;
 }
 
-li.testOK:before {
+li.testOK::before {
     content: "\2714";
-    color: rgba(0, 0, 0, 0.15);
+    color: rgb(0, 0, 0, 0.15);
     text-shadow: 0 0 0 #66d85e;
 }
 
@@ -816,18 +426,18 @@ li.testOK {
     border-left: #5ed562 4px solid;
 }
 
-li.testFailed:before {
+li.testFailed::before {
     content: "\274C";
-    color: #f00;
+    color: #ff0000;
 }
 
 li.testFailed {
     border-left: #f44336 4px solid;
 }
 
-li.testUnknown:before {
+li.testUnknown::before {
     content: "\2796";
-    color: #aaa;
+    color: #aaaaaa;
 }
 
 li.testUnknown {
@@ -917,9 +527,9 @@ li.testUnknown {
 /** list box */
 
 body > center > table {
-    border: solid thin rgba(0, 0, 0, 0.175);
+    border: solid thin rgb(0, 0, 0, 0.175);
     border-radius: 3px;
-    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075) !important;
+    box-shadow: 0 0.125rem 0.25rem rgb(0, 0, 0, 0.075) !important;
 }
 
 .menuList {
@@ -928,6 +538,7 @@ body > center > table {
     font-size: 12pt;
     font-weight: bold;
 }
+
 .menuListDis {
     display: inline-block;
     padding: 7px 0;
@@ -939,7 +550,7 @@ body > center > table {
 .mtBox,
 .mbBox,
 .rBox {
-    border-bottom: solid thin rgba(0, 0, 0, 0.1);
+    border-bottom: solid thin rgb(0, 0, 0, 0.1);
     padding: 4px 18px;
     height: 30px;
 }
@@ -949,8 +560,8 @@ body > center > table > tbody > tr:last-child > td {
 }
 
 .hdrDis {
-    border-bottom: solid thin rgba(0, 0, 0, 0.175);
-    background-color: rgba(0, 0, 0, 0.075);
+    border-bottom: solid thin rgb(0, 0, 0, 0.175);
+    background-color: rgb(0, 0, 0, 0.075);
     padding: 8px 16px;
     font-size: 13pt;
 }
@@ -965,36 +576,34 @@ body > center > table > thead > tr > td:nth-child(3) > div > div {
 
 /** results table */
 
-tr.resRow td {
-    padding: 2px 8px;
-}
-
-tr.resRow:hover {
-    background-color: rgba(0, 0, 0, 0.125) !important;
-}
-
-tr.resHdr td {
-    background-color: rgba(0, 0, 0, 0.075);
-    height: 20px;
-}
-
-.hdrCell {
-    background-color: rgba(0, 0, 0, 0.075);
-    height: 20px;
-    padding: 2px 0;
-    text-indent: 8px;
-}
-
-tr.resHdr td > a {
+table.resultLayout > thead > tr > td > a {
     padding: 2px 0;
     text-indent: 8px;
     width: 100%;
     height: 100%;
     display: block;
+    align-content: center;
 }
 
-tr.resHdr td > a:hover {
-    background-color: rgba(0, 0, 0, 0.1);
+table.resultLayout > thead > tr > td > a:hover {
+    background-color: rgb(0, 0, 0, 0.1);
+}
+
+table.resultLayout > thead > tr:first-child > td:not(:first-child) > a {
+    text-align: center;
+}
+
+table.resultLayout > thead > tr > td {
+    background-color: rgb(0, 0, 0, 0.075);
+    height: 20px;
+}
+
+table.resultLayout > tbody > tr > td {
+    padding: 2px 8px;
+}
+
+table.resultLayout > tbody > tr:hover {
+    background-color: rgb(0, 0, 0, 0.125) !important;
 }
 
 /*
@@ -1008,16 +617,17 @@ tr.resStat td {
     padding-right: 3px;
     padding-top: 3px;
     text-align: right;
-}*/
+} */
 
 /** buttons */
 
 .radio {
     height: 28px;
 }
+
 .radio input[type="radio"] {
-    -moz-appearance: initial;
-    -webkit-appearance: initial;
+    appearance: initial;
+    appearance: initial;
     appearance: initial;
     height: 20px;
     width: 20px;
@@ -1043,17 +653,17 @@ input.err {
 }
 
 input.err {
-    color: #fff;
+    color: #ffffff;
 }
 
-.updButton,
+div.bUpd input,
 .disButton,
 .delButton,
 .insButton,
 .fltButton,
 .seekButton,
-div.but2 > a {
-    box-shadow: 0 2px 3px -2px rgba(0, 0, 0, 0.175) !important;
+div.bLink a {
+    box-shadow: 0 2px 3px -2px rgb(0, 0, 0, 0.175) !important;
     border-radius: 4px;
     border: 1px solid;
     display: inline-block;
@@ -1067,34 +677,34 @@ div.but2 > a {
     text-align: center;
 }
 
-div.but2 {
-    margin: 0 4px;
+div.bLink a[href*="X=Task&"] {
+    width: auto;
 }
 
-.updButton,
-a.butLink {
+div.bUpd input,
+div.bLink a {
     outline-color: #263238;
 }
 
-.updButton:hover,
+div.bUpd input:hover,
 .disButton:hover,
 .delButton:hover,
 .insButton:hover,
 .fltButton:hover,
 .seekButton:hover,
-div.but2 > a:hover {
-    box-shadow: inset 0 0 0 99999px rgba(255, 255, 255, 0.125) !important;
+div.bLink a:hover {
+    box-shadow: inset 0 0 0 99999px rgb(255, 255, 255, 0.125) !important;
 }
 
-.updButton:active,
+div.bUpd input:active,
 .disButton:active,
 .delButton:active,
 .insButton:active,
 .fltButton:active,
 .seekButton:active,
-div.but2 > a:active {
+div.bLink a:active {
     outline: none;
-    box-shadow: inset 0 0 0 99999px rgba(0, 0, 0, 0.2) !important;
+    box-shadow: inset 0 0 0 99999px rgb(0, 0, 0, 0.2) !important;
 }
 
 .disButton,
@@ -1167,10 +777,12 @@ a.butSortHi {
     color: #feac27;
     font-weight: bold;
 }
+
 .textCrit {
     color: #d32f2f;
     font-weight: bold;
 }
+
 .textOther {
     color: #808080;
     font-weight: bold;
@@ -1187,7 +799,7 @@ a.butSortHi {
     height: 12px;
     display: block;
     border-radius: 50%;
-    box-shadow: 0 1px 1px -1px rgba(0, 0, 0, 0.22);
+    box-shadow: 0 1px 1px -1px rgb(0, 0, 0, 0.22);
     position: relative;
     left: 10px;
 }
@@ -1221,30 +833,40 @@ a.butSortHi {
     background-color: #ff6262;
 }
 
-.nOk:before {
+.nOk::before {
     content: "❌";
 }
 
-.wOk:before {
+.wOk::before {
     content: "❌";
     color: #ff00ff;
 }
-.yOk:before {
-    content: "✔️";
+
+.yOk::before {
+    content: "✅";
 }
-.oOk:before {
-    content: "✔️";
-    color: rgba(0, 0, 0, 0.15);
+
+.oOk::before {
+    content: "✅";
+    color: rgb(0, 0, 0, 0.15);
     text-shadow: 0 0 0 #ffc107;
 }
 
-.nOk:before,
-.wOk:before,
-.yOk:before,
-.oOk:before {
+.nOk::before,
+.wOk::before,
+.yOk::before,
+.oOk::before {
     float: left;
     width: 1.5em;
     text-align: center;
+}
+
+.yOk, .oOk {
+    color: #58d58c;
+}
+
+.wOk, .nOk {
+    color: #b24463;
 }
 
 select.std,
@@ -1260,12 +882,14 @@ select.flt {
     cursor: default;
     background-color: #00ccff;
 }
+
 .menuPane {
     position: absolute;
     display: none;
     background-color: #00ccff;
     border: solid 1px #000000;
 }
+
 .menuSep {
     width: 90%;
     height: 1px;
@@ -1281,9 +905,11 @@ select.flt {
     font-size: 12px;
     padding: 0.2em 0.4em;
 }
+
 .itemLo {
     font-weight: bold;
 }
+
 .itemHi {
     font-weight: bold;
     background-color: #0088cc;
@@ -1292,9 +918,11 @@ select.flt {
 .ac {
     text-align: center;
 }
+
 .al {
     text-align: left;
 }
+
 .ar {
     text-align: right;
 }
@@ -1302,48 +930,63 @@ select.flt {
 .w20 {
     width: 20px;
 }
+
 .w35 {
     width: 40px;
 }
+
 .w40 {
     width: 40px;
 }
+
 .w50 {
     width: 50px;
 }
+
 .w65 {
     width: 65px;
 }
+
 .w70 {
     width: 70px;
 }
+
 .w80 {
     width: 80px;
 }
+
 .w100 {
     width: 100px;
 }
+
 .w120 {
     width: 120px;
 }
+
 .w200 {
     width: 200px;
 }
+
 .w270 {
     width: 270px;
 }
+
 .w450 {
     width: 450px;
 }
+
 .fw {
     width: 100%;
 }
+
 .w80p {
     width: 80%;
 }
+
 .w50p {
     width: 50%;
 }
+
 .float {
     float: left;
 }
@@ -1359,6 +1002,7 @@ select.flt {
     border-style: solid;
     border-width: 1px;
 }
+
 .bigTitleBox {
     font-weight: bold;
     font-size: 20px;
@@ -1372,6 +1016,7 @@ select.flt {
 .insBox {
     width: 400px;
 }
+
 .insLab {
     background-color: #aaaaaa;
     border-color: #cccccc #666666 #666666 #cccccc;
@@ -1388,6 +1033,7 @@ input.fltDis {
     color: #ffffff;
     background-color: #989889;
 }
+
 input.flt {
     color: #000000;
     background-color: #989889;
@@ -1398,11 +1044,13 @@ input.seekDis {
     background-color: #989889;
     font-size: 10px;
 }
+
 input.seek {
     color: #000000;
     background-color: #989889;
     font-size: 10px;
 }
+
 select.seek {
     font-family: var(--font-monospace);
     font-size: 10px;
@@ -1411,9 +1059,11 @@ select.seek {
 .textHi {
     color: #800000;
 }
+
 .textStd {
     color: #000000;
 }
+
 .textDis {
     color: #808080;
 }
@@ -1421,9 +1071,11 @@ select.seek {
 .dupS {
     color: #c000c0;
 }
+
 .dupA {
     color: #c000c0;
 }
+
 .dupG {
     color: #ffff00;
 }
@@ -1435,28 +1087,24 @@ select.seek {
     border-width: 1px;
     text-align: center;
 }
+
 .hdrUp {
     height: 15px;
     background-color: #989889;
     border-color: #cccccc #666666 #666666 #cccccc;
     border-style: solid;
-    border-top-width: 1px;
-    border-right-width: 1px;
-    border-bottom-width: 1px;
-    border-left-width: 1px;
+    border-width: 1px;
     padding-left: 3px;
     padding-right: 3px;
     padding-top: 3px;
 }
+
 .hdrDown {
     height: 15px;
     background-color: #989889;
     border-color: #666666 #cccccc #cccccc #666666;
     border-style: solid;
-    border-top-width: 1px;
-    border-right-width: 1px;
-    border-bottom-width: 1px;
-    border-left-width: 1px;
+    border-width: 1px;
     padding-left: 3px;
     padding-right: 3px;
     padding-top: 3px;
@@ -1470,14 +1118,13 @@ select.seek {
 img.border {
     border-color: #6c6c61 #b2b2a7 #b2b2a7 #6c6c61;
     border-style: solid;
-    border-top-width: 1px;
-    border-right-width: 1px;
-    border-bottom-width: 1px;
-    border-left-width: 1px;
+    border-width: 1px;
 }
+
 .visY {
     visibility: visible;
 }
+
 .visN {
     visibility: hidden;
 }

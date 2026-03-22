@@ -1,26 +1,28 @@
-import { ExtensionSettings } from "../../../settings";
-import { Logged } from "../Logged";
+import type { ExtensionSettings } from "../../../settings";
 import { buildLink, getCourseId } from "../../utils";
+import { Logged } from "../Logged";
+
 import CourseComponent from "./Course.svelte";
 
 export interface CourseItem {
-    id: string;
     name: string;
     type: string;
     link: string | undefined;
-    opens: Date;
+    opens: Date | undefined;
     bonusEnd: Date | undefined;
-    closes: Date;
-    score: number | undefined;
+    closes: Date | undefined;
+    score: number | undefined | null;
     disabled: boolean;
 }
 
 export interface CourseGroup {
     name: string;
-    taskGrp: CourseItem[];
+    tasks: CourseItem[];
 }
 
 export class Course extends Logged {
+    className = "course";
+
     constructor(settings: ExtensionSettings) {
         super(settings);
     }
@@ -28,24 +30,23 @@ export class Course extends Logged {
     async initialise() {
         await super.initialise();
 
-        const center = document.querySelector<HTMLElement>("body > center");
-        if (center) {
-            center.style.display = "none";
-        }
+        document.querySelectorAll<HTMLElement>("body > details").forEach((e) => {
+            e.style.display = "none";
+        });
 
         const tasks = await GetTasks();
 
         const container = document.createElement("div");
-        document.body.insertBefore(container, center);
+        document.body.appendChild(container);
         new CourseComponent({
             target: container,
-            props: { courseGroups: tasks },
+            props: { courseGroups: tasks }
         });
     }
 }
 
 export async function GetTasks() {
-    const page = await fetch(buildLink("X=CourseOverview&Cou=" + getCourseId()))
+    const page = await fetch(buildLink("X=Course&Cou=" + getCourseId()))
         .then((res) => res.text())
         .catch((e) => {
             console.error("Failed to fetch course overview", e);
@@ -53,132 +54,89 @@ export async function GetTasks() {
     if (!page) return;
     const tree = new DOMParser().parseFromString(page, "text/html");
     const ret: CourseGroup[] = [];
-    const scores: Partial<CourseItem>[] = [];
-    document
-        .querySelectorAll("table.topLayout > tbody > tr > .lBox > span")
-        .forEach((e) => {
-            const row = e.parentElement?.parentElement;
-            const taskName = row?.children[1]?.querySelector<HTMLElement>(
-                ".menuListDis, .menuList, .menuListEarly",
-            );
-            const bonusEnd =
-                row?.children[1]?.querySelector<HTMLElement>(
-                    ".mBox span + div",
-                );
-            const points =
-                row?.childElementCount === 4
-                    ? row.children[2].querySelector<HTMLElement>(
-                          ".menuListDis, .menuList, .menuListEarly",
-                      )
-                    : null;
-            const link =
-                row?.children[
-                    row.childElementCount - 1
-                ].querySelector<HTMLAnchorElement>("a.butLink");
 
-            const bonusEndLine = bonusEnd?.textContent
-                ?.trim()
-                .split("\n")
-                .find((line) => line.includes("Včasné odevzdání"))
-                ?.trim();
+    tree.querySelectorAll("details.menuList").forEach((e) => {
+        const groupName = e.querySelector<HTMLElement>("summary > b")?.textContent;
+        const tasks: CourseItem[] = [];
 
-            if (!taskName) return;
-            scores.push({
-                name: taskName?.innerText,
-                score: points ? parseFloat(points?.innerText) : undefined,
-                bonusEnd: bonusEndLine
-                    ? textToDate(
-                          bonusEndLine
-                              .substring(bonusEndLine.indexOf(":") + 1)
-                              .trim(),
-                      )
-                    : undefined,
-                disabled: e.classList.contains("menuListDis"),
-                link: link?.href ?? "",
-            });
-        });
+        if (!groupName) {
+            throw new Error("Missing required group name: " + JSON.stringify(groupName));
+        }
 
-    tree.querySelectorAll("AssessmentGrp").forEach((e) => {
-        const groups: CourseItem[] = [];
-        e.querySelectorAll("TaskGrp, KNTest, ExtraPoints").forEach((f) => {
-            // const origLinkBase = {'TaskGrp': 'TaskGrp', 'KNTest': 'KNT', 'ExtraPoints': 'Extra'}[f.tagName]
-            // const origLinkPart = {'TaskGrp': 'Tgr', 'KNTest': 'Knt', 'ExtraPoints': 'Ex'}[f.tagName]
-            //
-            // if (document.querySelector(`a[href="?X=${origLinkBase}&Cou=${args.Cou}&${origLinkPart}=${f.getAttribute('id')}"]`))
-            // link = buildLink(`X=${origLinkBase}&Cou=${args.Cou}&${origLinkPart}=${f.getAttribute('id')}`)
+        if (groupName === "Výsledky") {
+            return;
+        }
+
+        e.querySelectorAll(":scope > div > div").forEach((f) => {
+            const name = f.querySelector<HTMLElement>("[class*='bigBut'] span")?.textContent;
 
             let type = {
-                taskgrp: "task",
-                kntest: "test",
-                extrapoints: "extra",
-            }[f.tagName.toLowerCase()];
-            if (
-                type == "test" &&
-                ["Training", "eLearning"].includes(
-                    f.getAttribute("assignType") ?? "",
-                )
-            ) {
+                program: "task",
+                quiz: "test",
+                extra: "extra"
+            }[
+                f.querySelector<HTMLImageElement>("[class*='bigBut'] img")?.src.split("/").pop()?.split(".").shift() ??
+                    ""
+            ];
+
+            if (type == "test" && name?.toLowerCase().includes("demo")) {
                 type = "test-demo";
             }
 
-            let name = f.getAttribute("name") || undefined;
-            if (name?.startsWith("Code review")) {
-                name = scores.find((e) => e.name?.startsWith("Code review"))
-                    ?.name;
-            }
-            let link: string | undefined = undefined;
-            let bonusEnd: Date | undefined = undefined;
-            let score = 0;
-            let disabled = false;
-            scores.forEach((g) => {
-                if (g.name === name || g.name === "Znalostní test - " + name) {
-                    score = g.score || score;
-                    bonusEnd = g.bonusEnd || bonusEnd;
-                    disabled = g.disabled || disabled;
-                    link = g.link || link;
+            const link: string | undefined = f.querySelector<HTMLAnchorElement>(":scope > div a")?.href;
+            const disabled: boolean = link === undefined;
+            let score: number | undefined | null;
+            let opens: Date | undefined;
+            let closes: Date | undefined;
+            let bonusEnd: Date | undefined;
+
+            f.querySelectorAll(":scope > div > span").forEach((span) => {
+                const text = span.textContent?.trim() ?? "";
+
+                if (text.startsWith("Hodnocení:")) {
+                    score = parseFloat(text.substring(text.indexOf(":") + 1).trim());
+
+                    if (isNaN(score)) {
+                        score = null;
+                    }
+                } else if (text.startsWith("Přístupné od:")) {
+                    opens = textToDate(text.substring(text.indexOf(":") + 1).trim());
+                } else if (text.startsWith("Řádný termín:")) {
+                    closes = textToDate(text.substring(text.indexOf(":") + 1).trim());
+                } else if (text.startsWith("Včasné odevzdání do:")) {
+                    bonusEnd = textToDate(text.substring(text.indexOf(":") + 1).trim());
                 }
             });
 
-            const id = f.getAttribute("id");
-            if (!id || !name || !type) {
-                throw new Error(
-                    "Missing required properties: " +
-                        JSON.stringify([id, name, type]),
-                );
+            if (!name || !type) {
+                console.log(f);
+                throw new Error("Missing required properties: " + JSON.stringify([name, type]));
             }
-            groups.push({
-                id,
+
+            tasks.push({
                 name,
                 type,
                 link: link,
-                opens: new Date(f.getAttribute("openDate") + "+0000"),
-                bonusEnd: bonusEnd,
-                closes: new Date(f.getAttribute("deadlineDate") + "+0000"),
-                score: score,
                 disabled: disabled,
+                score: score,
+                opens: opens,
+                closes: closes,
+                bonusEnd: bonusEnd
             });
         });
-        const name = e.getAttribute("name");
-        if (!name) {
-            throw new Error(
-                "Missing required group name: " + JSON.stringify(name),
-            );
-        }
+
         ret.push({
-            name,
-            taskGrp: groups,
+            name: groupName,
+            tasks: tasks
         });
     });
+
     return ret;
 }
 
 export function isToday(d: Date) {
     const today = new Date();
-    return (
-        d.getDate() == today.getDate() &&
-        d.getMonth() == today.getMonth() &&
-        d.getFullYear() == today.getFullYear()
-    );
+    return d.getDate() == today.getDate() && d.getMonth() == today.getMonth() && d.getFullYear() == today.getFullYear();
 }
 
 /**
@@ -234,9 +192,7 @@ function textToDate(text: string | null): Date {
     // parse "DD.MM.YYYY HH:MM:SS"
     const [date, time] = text.split(" ") ?? [];
     const [day, month, year] = (date.split(".") ?? []).map((s) => parseInt(s));
-    const [hour, minute, second] = (time?.split(":") ?? []).map((s) =>
-        parseInt(s),
-    );
+    const [hour, minute, second] = (time?.split(":") ?? []).map((s) => parseInt(s));
     const parsedDate = new Date(year, month - 1, day, hour, minute, second);
     if (!isDateValid(parsedDate)) {
         throw new Error(`Failed to parse date: ${text}\n
@@ -246,41 +202,69 @@ function textToDate(text: string | null): Date {
 }
 
 function parseItemInfo(document: Document): TaskItemInfo {
-    const title = document.querySelector("td.header")?.textContent?.trim();
+    const header = document.querySelectorAll("center > div:nth-child(1) table tbody tr");
 
-    const deadlineText = document
-        .querySelector("#maintable")
-        ?.querySelector("tr > td + td.tCell")?.textContent;
-    if (deadlineText === undefined) {
-        throw new Error("Failed to parse deadline");
+    let title: string | undefined;
+    let deadline: Date | undefined;
+    let lateDeadline: Date | undefined;
+    let lateDeadlineInfo: string | undefined;
+    let score: number | undefined;
+    let scoreMax: number | undefined;
+    let scoreInfo: string | undefined;
+
+    header.forEach((row) => {
+        const cells = row.querySelectorAll("td");
+
+        if (cells.length === 1) {
+            title = cells[0].textContent?.trim();
+        }
+
+        if (cells.length < 2) {
+            return;
+        }
+
+        const key = cells[0].textContent?.trim();
+        const value = cells[1];
+
+        if (!key || !value) {
+            return;
+        }
+
+        switch (key) {
+            case "Termín odevzdání:":
+                deadline = textToDate(value?.textContent ?? "");
+                break;
+            case "Pozdní odevzdání s penalizací:":
+                lateDeadline = textToDate(value.querySelector("b")?.textContent ?? "");
+                lateDeadlineInfo = value.textContent?.replace(value.querySelector("b")?.textContent ?? "", "").trim();
+                break;
+            case "Hodnocení:":
+                const floats = value?.textContent?.match(/\d+\.\d+/g);
+
+                scoreInfo = value.textContent?.replace(value.querySelector("b")?.textContent ?? "", "").trim();
+                if (floats && floats.length >= 2) {
+                    score = parseFloat(floats[0]);
+                    scoreMax = parseFloat(floats[1]);
+                }
+                break;
+        }
+    });
+
+    if (!title || !deadline || score === undefined || scoreMax === undefined) {
+        throw new Error(
+            "Failed to parse item info: " +
+                JSON.stringify({
+                    title,
+                    deadline,
+                    lateDeadline,
+                    lateDeadlineInfo,
+                    score,
+                    scoreMax,
+                    scoreInfo
+                })
+        );
     }
-    const deadline = textToDate(deadlineText);
 
-    const lateDeadlineEl = document
-        .querySelector("#maintable")
-        ?.querySelector("tr > td + td.rCell");
-    const lateDeadlineText = lateDeadlineEl?.querySelector("b")?.textContent;
-    const lateDeadline = lateDeadlineText
-        ? textToDate(lateDeadlineText)
-        : undefined;
-    const lateDeadlineInfo = lateDeadlineEl
-        ? (lateDeadlineEl.textContent ?? "")
-              .replace(lateDeadlineEl.querySelector("b")?.textContent ?? "", "")
-              .trim()
-        : undefined;
-
-    const scoreEl = document
-        .querySelector("#maintable")
-        ?.querySelector("tr > td + td.rbCell");
-    const scoreText = scoreEl?.querySelector("b")?.textContent;
-    const [score, scoreMax] = (scoreText?.split("/") ?? []).map(parseFloat);
-    const scoreInfo = scoreEl?.textContent
-        ?.replace(scoreEl.querySelector("b")?.textContent ?? "", "")
-        .trim();
-
-    if (!title) {
-        throw new Error("Failed to parse course item title");
-    }
     return {
         title,
         deadline,
@@ -288,33 +272,26 @@ function parseItemInfo(document: Document): TaskItemInfo {
         lateDeadlineInfo,
         score,
         scoreMax,
-        scoreInfo,
+        scoreInfo
     };
 }
 
 function parseItemTasks(document: Document): TaskItemTask[] {
     const tasks: TaskItemTask[] = [];
-    const taskEls = document.querySelectorAll("table#maintable");
-    taskEls.forEach((val, key) => {
+
+    document.querySelectorAll("table#maintable").forEach((val, i) => {
         // skip first as that one contains ItemInfo
-        if (key === 0) return;
+        if (i === 0) return;
 
-        const title = val.querySelector("tr > td + td")?.textContent;
-        const link = val.querySelector<HTMLAnchorElement>(
-            "tr + tr + tr + tr + tr a:last-child",
-        )?.href;
-        const text = val
-            .querySelector("tr + tr + tr + tr")
-            ?.textContent?.trim();
+        const title = val.querySelector("tbody > tr:nth-child(1) > td:nth-child(2)")?.textContent;
+        const link = val.querySelector<HTMLAnchorElement>("tbody > tr:last-child a:last-child")?.href;
+        const text = val.querySelector("tbody > tr:nth-child(4) > td")?.textContent?.trim();
 
-        const submissionsText =
-            val.querySelector("tr + tr > td + td")?.textContent;
+        const submissionsText = val.querySelector("tbody > tr:nth-child(2) > td:nth-child(2)")?.textContent;
 
-        const [
-            submissions = null,
-            submissionsMax = null,
-            submissionsWithPenalty = null,
-        ] = (submissionsText?.split("/") ?? [])
+        const [submissions = null, submissionsMax = null, submissionsWithPenalty = null] = (
+            submissionsText?.split("/") ?? []
+        )
             .flatMap((s) => s.split("+"))
             .map((s) => {
                 s = s.trim();
@@ -324,16 +301,13 @@ function parseItemTasks(document: Document): TaskItemTask[] {
                 return parseInt(s);
             });
 
-        const scoreText = val.querySelector("tr + tr + tr > td + td")
-            ?.textContent;
+        const scoreText = val.querySelector("tbody > tr:nth-child(3) > td:nth-child(2)")?.textContent;
         const [score, scoreMax] = (scoreText?.split("/") ?? []).map(parseFloat);
 
         if (!title || !link || !text) {
-            throw new Error(
-                "Failed to parse item task: " +
-                    JSON.stringify({ title, link, text }),
-            );
+            throw new Error("Failed to parse item task: " + JSON.stringify({ title, link, text }));
         }
+
         tasks.push({
             title,
             link,
@@ -342,9 +316,10 @@ function parseItemTasks(document: Document): TaskItemTask[] {
             submissionsMax,
             submissionsWithPenalty,
             score,
-            scoreMax,
+            scoreMax
         });
     });
+
     return tasks;
 }
 

@@ -1,0 +1,11 @@
+@import url("./common.css");
+@import url("./header/navbar.css");
+@import url("./header/notifications.css");
+
+/* Pages */
+@import url("./pages/exam.css");
+@import url("./pages/login.css");
+
+/* Legacy */
+@import url("./light.css");
+@import url("./dark.css");

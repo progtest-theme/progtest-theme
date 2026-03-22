@@ -1,6 +1,6 @@
 <script lang="ts">
     import { fade } from "svelte/transition";
-    import { TaskItem } from "./Course";
+    import type { TaskItem } from "./Course.ts";
     import { onMount } from "svelte";
 
     export let task: Promise<TaskItem>;
@@ -44,11 +44,7 @@
         {#await task then data}
             <!-- svelte-ignore a11y-click-events-have-key-events -->
             <!-- svelte-ignore a11y-no-static-element-interactions -->
-            <div
-                on:click|stopPropagation
-                class="modal"
-                transition:fade={{ duration: 150 }}
-            >
+            <div on:click|stopPropagation class="modal" transition:fade={{ duration: 150 }}>
                 <div class="modal-close" on:click={close}>✖️</div>
 
                 <div class="modal-header">
@@ -69,7 +65,9 @@
                         </span>
                         {#if data.info.lateDeadline}
                             <span class="modal-deadline-late">
-                                {data.info.lateDeadline.toLocaleString("cs-CZ")}
+                                {data.info.lateDeadline.toLocaleString("cs-CZ") +
+                                    " " +
+                                    (data.info.lateDeadlineInfo ?? "")}
                             </span>
                         {/if}
                     </div>
@@ -79,12 +77,8 @@
                         <a href={task.link} class="modal-line">
                             <div class="mtask-title">{task.title}</div>
                             <div class="mtask-sub">
-                                <span class="mtask-sub-my"
-                                    >{task.submissions ?? "-"}</span
-                                >
-                                <span class="mtask-sub-max"
-                                    >/ {task.submissionsMax ?? "-"}</span
-                                >
+                                <span class="mtask-sub-my">{task.submissions ?? "-"}</span>
+                                <span class="mtask-sub-max">/ {task.submissionsMax ?? "-"}</span>
                                 {#if task.submissionsWithPenalty ?? 0 > 0}
                                     <span class="mtask-sub-pen"
                                         >(+{task.submissionsWithPenalty})</span
@@ -92,12 +86,8 @@
                                 {/if}
                             </div>
                             <div class="mtask-score">
-                                <span class="mtask-score-my"
-                                    >{task.score.toFixed(2)}</span
-                                >
-                                <span class="mtask-score-max"
-                                    >{task.scoreMax.toFixed(2)}</span
-                                >
+                                <span class="mtask-score-my">{task.score.toFixed(2)}</span>
+                                <span class="mtask-score-max">{task.scoreMax.toFixed(2)}</span>
                             </div>
                             <div class="mtask-text">
                                 {task.text}
@@ -263,8 +253,8 @@
 
     .modal-deadline-late {
         font-size: 11pt;
-        margin-left: 5pt;
         font-weight: 100;
+        display: block;
     }
 
     .modal-line {

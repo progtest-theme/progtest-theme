@@ -1,6 +1,7 @@
 <script lang="ts">
     import { buildLink, getCourseId } from "../../utils";
-    import { CourseGroup, CourseItem, TaskItem, parseTaskGrp } from "./Course";
+    import { parseTaskGrp } from "./Course.ts";
+    import type { CourseGroup, CourseItem, TaskItem } from "./Course.ts";
     import CourseGroupComponent from "./course-group.svelte";
     import TaskModal from "./task-modal.svelte";
 
@@ -36,10 +37,7 @@
 
 <main class="course_container">
     <div class="course_results_grp course_grp">
-        <a
-            href={buildLink(`X=Results&Cou=${courseId}`).toString()}
-            class="course_link"
-        >
+        <a href={buildLink(`X=Results&Cou=${courseId}`).toString()} class="course_link">
             <span class="course_link_name">Výsledky</span>
         </a>
     </div>

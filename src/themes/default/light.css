@@ -1,105 +1,3 @@
-@import "./common.css";
-
-.uniVal {
-    color: #2e2e2e;
-}
-
-#loadWrapper {
-    background: #fff;
-}
-
-#shib1 > td > img {
-    background: none;
-    padding-left: 0;
-}
-
-body {
-    color: #000000;
-    background-color: #fff;
-    background-image: url("./assets/background-light.PNG");
-}
-
-table {
-    background-color: #fff;
-}
-
-select {
-    outline-color: #2e2e2e;
-}
-
-.app_name {
-    text-shadow: 0 0 1px rgba(0, 0, 0, 0.25);
-    color: #464646;
-}
-
-.app_name > b {
-    color: #212121;
-}
-
-.loginForm > center > div > div > table:before {
-    background: #26a69a;
-}
-
-.loginForm table {
-    background-color: #fff !important;
-}
-
-.loginForm .insBox {
-    background: #fff;
-}
-
-.loginForm div.outButton.w120 input,
-.loginForm a.butLink {
-    outline-color: #004d40;
-}
-
-.loginForm select[name="lang"] {
-    border-bottom: thin solid rgba(0, 0, 0, 0.25);
-    color: #353535;
-}
-
-#langGlobe {
-    fill: #424242;
-}
-
-.loginForm #ldap2 > td:nth-child(1) > b,
-.loginForm #ldap1 > td:nth-child(1) > b {
-    color: #585858;
-    background: #fff;
-}
-
-.loginForm input.std.w200 {
-    border-bottom: thin solid rgba(0, 0, 0, 0.3);
-}
-
-/** header */
-
-body > table {
-    background-color: #343a40 !important;
-}
-
-body > table td {
-    background-color: #343a40 !important;
-}
-
-#refProgress {
-    background-color: rgb(255, 193, 7) !important;
-}
-
-.notifications {
-    background: #fff;
-    border-color: #eee;
-}
-
-.notifications > a {
-    color: #000;
-    border-color: #d5d5d5;
-}
-
-.notifications > a:hover {
-    background: #ececec;
-}
-
 /** subject select */
 
 .subject {
@@ -219,8 +117,8 @@ a.course_link:hover {
 }
 
 .modal-spinner {
-    background: url(./assets/spinner.svg),
-        radial-gradient(ellipse at center, #fffa 40%, #fff0 70%);
+    background: url(../assets/spinner.svg),
+    radial-gradient(ellipse at center, #fffa 40%, #fff0 70%);
 }
 
 .mtask-score-my::after {
@@ -237,8 +135,8 @@ table.header {
     border-bottom: solid thin rgba(0, 0, 0, 0.175);
 }
 
-.outBox > table:not(.header) {
-    background-color: #fff !important;
+table {
+    background-color: #fff;
 }
 
 /** item body */
@@ -295,21 +193,21 @@ body > center > table > tbody > tr:nth-child(even) {
 
 /** results table */
 
-tr.resRow td {
+table.resultLayout > thead > tr > td {
     /*border-top: thin solid rgba(0, 0, 0, 0.125);*/
     border-top: thin solid #eee;
 }
 
-tr.resRow:nth-child(even) {
+table.resultLayout > thead > tr:nth-child(even) {
     /*background-color: rgba(0, 0, 0, 0.025);*/
     background-color: #f8f8f8;
 }
 
-.hdrCell {
+table.resultLayout > thead > tr > td {
     color: #000000;
 }
 
-tr.resHdr td > a {
+table.resultLayout > thead > tr > td > a {
     color: #000000;
 }
 
@@ -367,8 +265,8 @@ input.err {
     background-color: #f13636;
 }
 
-.updButton,
-a.butLink {
+div.bUpd input,
+div.bLink a {
     background-color: #607d8b;
     border-color: #455a64 !important;
     text-shadow: 0 1px 0 #455a64;

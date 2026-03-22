@@ -1,6 +1,6 @@
 <script lang="ts">
     import { slide } from "svelte/transition";
-    import { MenuItem, Subjects } from "../Main";
+    import type { MenuItem, Subjects } from "./Main.ts";
     import cx from "classnames";
     import MenuItemComponent from "./menu-item.svelte";
 
@@ -16,7 +16,7 @@
     });
 
     let expanded: Record<string, boolean> = {
-        [sortedSubjects[0][0]]: true,
+        [sortedSubjects[0][0]]: true
     };
 
     const getAcademicYear = (semester: string) => {
@@ -41,7 +41,7 @@
         <!-- svelte-ignore a11y-click-events-have-key-events -->
         <button
             class={cx("subjectHeader", {
-                active: expanded[semester],
+                active: expanded[semester]
             })}
             on:click={() => toggle(semester)}
             >{getSemesterHeader(semester)}
@@ -114,11 +114,7 @@
         display: block;
         width: 100%;
         height: 35px;
-        background: linear-gradient(
-            to right,
-            #343a40 20%,
-            rgba(0, 0, 0, 0) 99%
-        );
+        background: linear-gradient(to right, #343a40 20%, rgba(0, 0, 0, 0) 99%);
         line-height: 35px;
         padding: 0 0 0 34px;
         font-size: 22px;

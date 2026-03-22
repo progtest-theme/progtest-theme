@@ -1,0 +1,306 @@
+body.ptt-login {
+    select[name="UID_UNIVERSITY"] {
+        width: -webkit-fill-available;
+    }
+
+    .appName {
+        text-align: center;
+        font-size: 4.5rem;
+        font-weight: 300;
+        line-height: 0.6;
+        margin-top: -38px;
+        letter-spacing: 2px;
+        text-shadow: 0 0 1px rgb(0, 0, 0, 0.25);
+        color: #464646;
+
+        b {
+            font-weight: 500;
+            color: #212121;
+        }
+
+        body.dark & {
+            text-shadow: 0 0 2px rgb(255, 255, 255, 0.25);
+            color: #cacaca;
+
+            b {
+                color: #f5f5f5;
+            }
+        }
+    }
+
+    .loginForm table {
+        border: none !important;
+        box-shadow: none !important;
+        border-radius: 7px !important;
+        background-color: #fff !important;
+
+        td {
+            background: transparent !important;
+            border: none !important;
+        }
+
+        body.dark & {
+            background-color: #252525 !important;
+        }
+    }
+
+    .loginForm .insBox {
+        position: absolute;
+        width: 350px;
+        margin: 0;
+        height: 380px;
+        border-radius: 7px;
+        box-shadow: 0 2px 42px 0 rgb(0, 0, 0, 0.28);
+        left: calc(50% - 50px);
+        top: 160px;
+        background: #fff;
+
+        body.dark & {
+            background: #252525;
+        }
+    }
+
+    .loginForm .insBox > table {
+        padding: 25px;
+        text-align: center;
+
+        &::before {
+            content: "";
+            width: 260px;
+            height: 90%;
+            position: absolute;
+            top: 5%;
+            left: -250px;
+            box-shadow: 0 5px 23px 0 rgb(0, 0, 0, 0.45);
+            z-index: -1;
+            border-radius: 7px;
+            background: #26a69a;
+        }
+
+        body.dark &::before {
+            background: #263238;
+        }
+    }
+
+    select[name="lang"] {
+        outline: none;
+        background: none;
+        border: none;
+        border-radius: 0;
+        padding-right: 26px;
+        font-weight: 600;
+        padding-bottom: 4px;
+        cursor: pointer;
+        border-bottom: thin solid rgb(0, 0, 0, 0.25);
+        color: #353535;
+
+        body.dark & {
+            border-bottom: thin solid rgb(255, 255, 255, 0.25);
+            color: #d1d1d1;
+        }
+    }
+
+    #langGlobe {
+        position: absolute;
+        right: 28px;
+        top: 3px;
+        z-index: -1;
+
+        body.dark & {
+            filter: brightness(0) invert(1);
+        }
+    }
+
+    #uniSelect {
+        position: absolute;
+        top: 260px;
+        left: calc(50% - 300px);
+        width: 250px;
+        font-size: 12pt;
+    }
+
+    #uniSelect .uniOption {
+        padding: 5px 0 5px 15px;
+        cursor: pointer;
+        color: #2e2e2e;
+
+        &[active] {
+            padding-left: 12px;
+            border-left: 3px solid #ffeb3b;
+            font-weight: 500;
+            background: rgb(255, 255, 255, 0.075);
+            box-shadow: 0 1px 4px -3px rgb(0, 0, 0, 0.5);
+        }
+
+        &:hover {
+            background: rgb(255, 255, 255, 0.125);
+        }
+
+        body.dark & {
+            color: #d6d6d6;
+        }
+    }
+
+    .loginForm .insBox > table > tbody > tr:nth-child(1) {
+        position: absolute;
+        left: -110px;
+        top: 40px;
+    }
+
+    .loginForm .insBox > table > tbody > tr:nth-child(2) {
+        display: none;
+    }
+
+    .loginForm div.bUpd input,
+    .loginForm div.bLink a {
+        position: absolute;
+        width: 120px;
+        color: #fff;
+        padding: 10px 0;
+        border-radius: 3px;
+        box-shadow: 0 1px 3px 0 rgb(0, 0, 0, 0.25);
+        border: none;
+        font-size: 12pt;
+        left: calc(50% - 60px);
+        bottom: 80px;
+        cursor: pointer;
+        background-color: #009688;
+        outline-color: #004d40;
+
+        &:hover {
+            background: #26a69a;
+        }
+
+        &:active {
+            background: #00796b;
+        }
+
+        body.dark & {
+            outline-color: #b2dfdb;
+        }
+    }
+
+    .loginForm div.bLink a:focus {
+        outline-offset: 0;
+        outline-style: initial;
+        outline-width: 5px;
+    }
+
+    .loginForm td:nth-child(2) > div.bUpd input {
+        bottom: 25px;
+        font-size: 10pt;
+        width: 100px;
+        left: calc(50% - 50px);
+        padding: 7px 0;
+    }
+
+    .loginForm #shib1 > td > img {
+        background: none;
+        padding-left: 0;
+
+        body.dark & {
+            box-sizing: border-box;
+            background: url("../../assets/shibboleth-inverted.png") no-repeat;
+            background-size: 200px auto;
+            width: 200px;
+            height: 70px;
+            padding-left: 200px;
+        }
+    }
+
+    .loginForm #shib2 > td {
+        padding-top: 40px;
+        font-size: 12pt;
+    }
+
+    .loginForm :is(#ldap1, #ldap2, #ldap3) {
+        input {
+            border: 0;
+            outline: none;
+            font-size: 16pt;
+            position: absolute;
+            left: 50px;
+            width: 250px;
+            background: transparent !important;
+            font-weight: 400 !important;
+            padding: 3px 0 !important;
+            min-width: 250px !important;
+            border-bottom: thin solid rgb(0, 0, 0, 0.3);
+
+            body.dark & {
+                border-bottom: thin solid rgb(255, 255, 255, 0.3);
+            }
+        }
+
+        td:nth-child(1) > b {
+            font-weight: 100;
+            position: absolute;
+            left: 50px;
+            font-size: 16pt;
+            cursor: pointer;
+            width: 250px;
+            text-align: left;
+            transition: font-size 0.2s ease,
+            top 0.2s ease;
+            color: #585858;
+            background: #fff;
+
+            &[moved] {
+                font-size: 10pt;
+                cursor: default;
+                background: transparent;
+                border: none;
+            }
+
+            body.dark & {
+                color: #cdcdcd;
+                background: #252525;
+            }
+        }
+    }
+
+    /* Username field */
+    .loginForm #ldap1 {
+        input {
+            top: 70px;
+        }
+
+        td:nth-child(1) > b {
+            top: 70px;
+
+            &[moved] {
+                top: 50px;
+            }
+        }
+    }
+
+    /* Password field */
+    .loginForm #ldap2 {
+        input {
+            top: 130px;
+        }
+
+        td:nth-child(1) > b {
+            top: 130px;
+
+            &[moved] {
+                top: 110px;
+            }
+        }
+    }
+
+    /* TOTP field */
+    .loginForm #ldap3 {
+        input {
+            top: 190px;
+        }
+
+        td:nth-child(1) > b {
+            top: 190px;
+
+            &[moved] {
+                top: 170px;
+            }
+        }
+    }
+}

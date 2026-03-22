@@ -1,5 +1,6 @@
-import { ExtensionSettings } from "../../../settings";
+import type { ExtensionSettings } from "../../../settings";
 import { Logged } from "../Logged";
+
 import MainComponent from "./Main.svelte";
 
 export type MenuItem = {
@@ -13,7 +14,9 @@ export type MenuItem = {
 
 export type Subjects = Record<string, MenuItem[]>;
 
-type ParsedItem = Pick<MenuItem, "title" | "text" | "link">;
+type ParsedItem = Pick<MenuItem, "title" | "text" | "link"> & {
+    semester: string;
+};
 
 type CoursesInfo = {
     semester: string;
@@ -36,6 +39,8 @@ type CoursesInfo = {
 };
 
 export class Main extends Logged {
+    className = "main";
+
     orderC = 1000;
     constructor(settings: ExtensionSettings) {
         super(settings);
@@ -44,42 +49,26 @@ export class Main extends Logged {
     async initialise() {
         await super.initialise();
 
-        const center = document.querySelector<HTMLElement>("body > center");
-        if (center) {
-            center.style.display = "none";
-        }
-
         // collect all elements
         const items = parseItems();
         if (items.length === 0) {
-            if (!center) return;
-            center.style.display = "block";
             return;
         }
 
         // get subject URLs from courses
-        const subjectInfo: CoursesInfo = await fetch(
-            "https://courses.fit.cvut.cz/data/courses-all.json",
-            {
-                method: "GET",
-                mode: "cors",
-                credentials: "omit",
-            },
-        ).then((response) => response.json());
+        const subjectInfo: CoursesInfo = await fetch("https://courses.fit.cvut.cz/data/courses-all.json", {
+            method: "GET",
+            mode: "cors",
+            credentials: "omit"
+        }).then((response) => response.json());
 
         const subjects: Subjects = {};
         const settings: MenuItem[] = [];
         items.forEach((item) => {
             const icon = getMenuIcon(item.title);
 
-            // create semester code from subject code
-            const semester = item.text.substring(
-                item.text.indexOf("(") + 1,
-                item.text.indexOf(")"),
-            );
-
             // settings have no semester
-            if (semester === "") {
+            if (item.semester === "Nástroje") {
                 // overrides
                 if (item.title === "FAQ") {
                     item.text = "Často kladené dotazy";
@@ -91,82 +80,72 @@ export class Main extends Logged {
                     title: item.title,
                     text: item.text,
                     icon,
-                    link: item.link,
+                    link: item.link
                 });
                 return;
             }
 
-            const footer = "20" + semester;
-            const semesterKey = `B${semester.split("/")[0]}${
-                semester.includes("ZS") ? 1 : 2
-            }`;
-            const subjectHomepage =
-                subjectInfo.courses[item.title]?.homepage ??
-                `https://courses.fit.cvut.cz/${item.title}`;
+            const year = item.semester.match(/\d+\/\d+/);
 
-            if (!subjects[semesterKey]) {
-                subjects[semesterKey] = [];
-            }
+            const footer = item.semester;
+            const semesterKey = `B${(year ? year[0].split("/")[0] : "").substring(
+                2
+            )}${item.semester.includes("Zimní") ? 1 : 2}`;
+            const subjectHomepage =
+                subjectInfo.courses[item.title]?.homepage ?? `https://courses.fit.cvut.cz/${item.title}`;
+
+            subjects[semesterKey] ??= [];
             subjects[semesterKey].push({
                 title: item.title,
-                text: item.text.substring(0, item.text.indexOf("(")),
+                text: item.text.substring(0, item.text.indexOf("(")) || item.text,
                 icon,
                 link: item.link,
                 subjectHomepage,
-                footer,
+                footer
             });
         });
 
         const container = document.createElement("div");
-        document.body.insertBefore(container, center);
+        document.querySelector("div.navLink.navbar")?.insertAdjacentElement("afterend", container);
         new MainComponent({
             target: container,
-            props: { subjects, settings },
+            props: { subjects, settings }
         });
     }
 }
 
 function parseItems(): ParsedItem[] {
-    return [
-        ...document.querySelectorAll<HTMLTableRowElement>(
-            "body > center > table > tbody > tr",
-        ),
-    ]
-        .map((e: HTMLElement) => {
-            const ch = e.children[1]?.children[0]?.children[0]?.children[0];
-            if (!(ch instanceof HTMLAnchorElement)) {
-                console.error("Subject button not found");
-                return null;
-            }
-            const firstChild = e.children[0];
-            if (!(firstChild instanceof HTMLElement)) {
-                console.error("Subject name not found");
-                return null;
-            }
-            return {
-                title: ch.innerText,
-                text: firstChild.innerText,
-                link: ch.href,
-            };
-        })
-        .filter((e) => e !== null) as ParsedItem[];
+    const items: ParsedItem[] = [];
+
+    document.querySelectorAll("details.menuList").forEach((semester) => {
+        semester.querySelectorAll("div.bigButLink").forEach((subject) => {
+            const link = subject.querySelector("a");
+            const name = subject.querySelector("span");
+            const title = subject.nextElementSibling?.querySelector("span");
+
+            items.push({
+                title: name?.textContent ?? "",
+                text: title?.textContent ?? "",
+                link: link?.href ?? "",
+                semester: semester.querySelector("summary")?.innerText ?? ""
+            });
+        });
+        semester.remove();
+    });
+
+    return items;
 }
 
 function getMenuIcon(title: string) {
-    return (
+    const iconName = (
         {
-            "BI-AAG": "icon-aag",
-            "BI-AG1": "icon-ag1",
-            "BI-OSY": "icon-osy",
-            "BI-PA1": "icon-pa1",
-            "BI-PA2": "icon-pa2",
-            "BI-PJV": "icon-pjv",
-            "BI-PS1": "icon-ps1",
-            "BI-PYT": "icon-pyt",
-            "NI-PDP": "icon-pdp",
-            Nastavení: "icon-setting",
-            Překladače: "icon-compile",
-            FAQ: "icon-faq",
-        }[title] || "icon-unknown"
+            Nastavení: "settings",
+            Překladače: "compile",
+            FAQ: "faq"
+        }[title] || title.toLowerCase()
+            .replace("bi-", "")
+            .replace("ni-", "")
     );
+
+    return chrome.runtime.getURL("themes/assets/icons/" + iconName + ".svg");
 }

@@ -1,7 +1,8 @@
+import { cp, mkdir, rm } from "fs/promises";
+
 import { BUILD_DIR, ENTRYPOINTS, SRC_DIR } from "./constants";
-import { mkdir, rm, cp } from "fs/promises";
-import { copyDirectory } from "./utils";
 import { sveltePlugin } from "./sveltePlugin";
+import { copyDirectory } from "./utils";
 
 export async function build(options: { verbose: boolean; clean: boolean }) {
     if (options.clean) {
@@ -9,7 +10,7 @@ export async function build(options: { verbose: boolean; clean: boolean }) {
     }
 
     try {
-        await mkdir(BUILD_DIR);
+        await mkdir(BUILD_DIR, { recursive: true });
     } catch (e) {
         if ((e as ErrnoException)?.code !== "EEXIST") {
             console.error(e);
@@ -20,7 +21,7 @@ export async function build(options: { verbose: boolean; clean: boolean }) {
     const buildOutput = await Bun.build({
         entrypoints: Array(...ENTRYPOINTS),
         outdir: BUILD_DIR,
-        plugins: [sveltePlugin],
+        plugins: [sveltePlugin]
     });
     if (!buildOutput.success) {
         console.error("Build failed:", buildOutput);
@@ -31,26 +32,15 @@ export async function build(options: { verbose: boolean; clean: boolean }) {
     console.log("Copying other files");
     await copyDirectory(SRC_DIR, BUILD_DIR, {
         filter: (path) => {
-            if (path.endsWith("highlight.min.js")) {
-                return true;
-            }
-            if (
-                path.endsWith(".js") ||
-                path.endsWith(".ts") ||
-                path.endsWith(".svelte")
-            ) {
-                return false;
-            }
-            return true;
+            return !(path.endsWith(".js") || path.endsWith(".ts") || path.endsWith(".svelte"));
         },
-        verbose: options.verbose,
+        verbose: options.verbose
     });
-    await cp(
-        `./node_modules/normalize.css/normalize.css`,
-        `${BUILD_DIR}/external/normalize.css`,
-    );
-    await cp(
-        `./node_modules/iconify-icon/dist/iconify-icon.min.js`,
-        `${BUILD_DIR}/external/iconify-icon.min.js`,
-    );
+
+    for (const path of [
+        "./node_modules/normalize.css/normalize.css",
+        "./node_modules/iconify-icon/dist/iconify-icon.min.js"
+    ]) {
+        await cp(path, `${BUILD_DIR}/external/${path.split("/").pop()}`);
+    }
 }

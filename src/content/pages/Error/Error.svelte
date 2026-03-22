@@ -19,7 +19,7 @@
     <p>
         Try <a href={document.referrer} on:click={goBack}>going back</a>, if
         that doesn't help,
-        <a href="https://github.com/keombre/progtest-theme/issues"
+        <a href="https://github.com/progtest-theme/progtest-theme/issues"
             >file an issue on GitHub</a
         >.
     </p>

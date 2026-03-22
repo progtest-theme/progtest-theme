@@ -2,7 +2,7 @@ declare module "web-ext" {
     export const cmd: {
         [K in keyof WebExtConfig]: (
             options: WebExtSharedOptions & WebExtConfig[K],
-            { shouldExitProgram }: { shouldExitProgram: boolean },
+            { shouldExitProgram }: { shouldExitProgram: boolean }
         ) => Promise<void>;
     };
 

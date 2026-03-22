@@ -1,5 +1,6 @@
-import { ExtensionSettings } from "../../settings";
-import { Page } from "./Page";
+import hljs from "highlight.js";
+
+import type { ExtensionSettings } from "../../settings";
 
 interface LoggedTask {
     subject: string;
@@ -8,8 +9,10 @@ interface LoggedTask {
     seen: boolean;
 }
 
-export class Logged implements Page {
-    topButton = `
+export class Logged implements IPage {
+    className = "logged";
+
+        topButton = `
 <svg id="upTop" xmlns="http://www.w3.org/2000/svg" viewBox="-1 -0.5 26 26">
     <path d="M12 8l-6 6 1.41 1.41L12 10.83l4.59 4.58L18 14z"></path>
 </svg>
@@ -21,7 +24,7 @@ export class Logged implements Page {
 
     constructor(protected settings: ExtensionSettings) {
         this.tButton = document.getElementById("upTop") as HTMLElement;
-        const header = document.querySelector<HTMLElement>("body > table");
+        const header = document.querySelector<HTMLElement>("body > .navLink");
         if (!header) {
             throw new Error("Header not found");
         }
@@ -30,6 +33,7 @@ export class Logged implements Page {
 
     async initialise() {
         this.header.className += " navbar";
+        this.header.style.zIndex = "2";
         // add scroll to top button
         document.body.innerHTML += this.topButton;
         if (this.tButton) {
@@ -37,7 +41,7 @@ export class Logged implements Page {
                 this.tButton.removeAttribute("style");
                 document.body.scrollIntoView({
                     block: "start",
-                    behavior: "smooth",
+                    behavior: "smooth"
                 });
             });
         }
@@ -61,14 +65,12 @@ export class Logged implements Page {
         const bell = document.createElement("div");
         bell.classList.add("notify", "off");
         bell.addEventListener("click", Logged.notifyToggle.bind(this));
-        const logout = document.querySelector('.navLink[href*="Logout"]');
+        const logout = document.querySelector('.navLink a[href*="Logout"]');
         logout?.parentNode?.insertBefore(bell, logout);
 
         document.addEventListener("click", (e) => {
             if (e.target != bell) {
-                document
-                    .getElementsByClassName("notifications")[0]
-                    .classList.add("notifications-hide");
+                document.getElementsByClassName("notifications")[0].classList.add("notifications-hide");
             }
         });
 
@@ -79,10 +81,7 @@ export class Logged implements Page {
     }
 
     scrollCheck() {
-        if (
-            document.body.scrollTop > 40 ||
-            document.documentElement.scrollTop > 40
-        ) {
+        if (document.body.scrollTop > 40 || document.documentElement.scrollTop > 40) {
             this.scrollLow();
         } else {
             this.scrollHigh();
@@ -115,15 +114,15 @@ export class Logged implements Page {
     }
 
     highlightCode() {
-        document
-            .querySelectorAll<HTMLElement>("pre, code, tt")
-            .forEach((block) => {
-                if (this.settings.syntaxHighlighting) {
-                    window.hljs.highlightBlock(block);
-                } else {
-                    block.classList.add("hljs");
-                }
-            });
+        document.querySelectorAll<HTMLElement>("pre:not(.hljs), code:not(.hljs), tt:not(.hjls)").forEach((block) => {
+            if (this.settings.syntaxHighlighting) {
+                block.innerHTML = block.textContent || block.innerText || "";
+
+                hljs.highlightElement(block);
+            } else {
+                block.classList.add("hljs");
+            }
+        });
     }
 
     async notifications() {
@@ -138,7 +137,7 @@ export class Logged implements Page {
                 tasks?.map((e) => {
                     e["seen"] = true;
                     return e;
-                }),
+                })
             );
         } else {
             const localTasks = JSON.parse(localStorage.tasks) as LoggedTask[];
@@ -146,9 +145,7 @@ export class Logged implements Page {
                 tasks?.filter((t) => {
                     return !localTasks.some((e) => e.link === t.link);
                 }) ?? [];
-            this.displayNotifications(
-                notify?.concat(localTasks.filter((e) => e.seen == false)) ?? [],
-            );
+            this.displayNotifications(notify?.concat(localTasks.filter((e) => e.seen == false)) ?? []);
             localStorage.tasks = JSON.stringify(localTasks.concat(notify));
         }
     }
@@ -157,9 +154,7 @@ export class Logged implements Page {
         if (!elems.length) {
             return;
         }
-        document
-            .getElementsByClassName("notify")[0]
-            .classList.replace("off", "on");
+        document.getElementsByClassName("notify")[0].classList.replace("off", "on");
         const frame = document.getElementsByClassName("notifications")[0];
         frame.innerHTML = "";
         elems.forEach((e) => {
@@ -174,9 +169,7 @@ export class Logged implements Page {
     static getLinksFromHTML(text: string, href: string) {
         text = text.replace(/<script[^>]*>([\S\s]*?)<\/script>/gim, "");
         const doc = new DOMParser().parseFromString(text, "text/html");
-        const allLinks = doc.querySelectorAll<HTMLAnchorElement>(
-            `.butLink[href*="${href}"]`,
-        );
+        const allLinks = doc.querySelectorAll<HTMLAnchorElement>(`.bigButLink a[href*="${href}"]`);
         const links: HTMLAnchorElement[] = [];
         allLinks.forEach((link) => {
             if (link.href && !link.href.includes("javascript:")) {
@@ -188,10 +181,7 @@ export class Logged implements Page {
 
     static async taskSpider() {
         const main = await fetch(
-            new URL(
-                "index.php?X=Main",
-                window.location.protocol + "//" + window.location.hostname,
-            ),
+            new URL("index.php?X=Main", window.location.protocol + "//" + window.location.hostname)
         );
         if (!main.ok || main.redirected) {
             return [];
@@ -217,8 +207,7 @@ export class Logged implements Page {
 
             taskLinks.forEach((f) => {
                 const url = new URL(f.href);
-                const name = (f.parentNode?.parentNode?.parentNode?.parentNode
-                    ?.firstElementChild || undefined) as
+                const name = (f.parentNode?.parentNode?.parentNode?.parentNode?.firstElementChild || undefined) as
                     | HTMLElement
                     | undefined;
                 if (!name) {
@@ -228,7 +217,7 @@ export class Logged implements Page {
                     subject: e.innerText,
                     link: "/" + url.search,
                     name: name?.innerText,
-                    seen: false,
+                    seen: false
                 });
             });
         }
@@ -236,9 +225,7 @@ export class Logged implements Page {
     }
 
     static notifyToggle() {
-        document
-            .getElementsByClassName("notifications")[0]
-            .classList.toggle("notifications-hide");
+        document.getElementsByClassName("notifications")[0].classList.toggle("notifications-hide");
     }
 
     static notifySeen(event: MouseEvent) {
@@ -263,9 +250,7 @@ export class Logged implements Page {
         frame.removeChild(linkNode);
         if (!frame.childElementCount) {
             frame.innerHTML = "<b>Žádná upozornění</b>";
-            document
-                .getElementsByClassName("notify")[0]
-                .classList.replace("on", "off");
+            document.getElementsByClassName("notify")[0].classList.replace("on", "off");
         }
     }
 }

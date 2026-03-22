@@ -1,0 +1,20 @@
+body.ptt-exam {
+    form table tr:nth-child(2) td {
+        padding-top: 20px;
+    }
+
+    form table tr:last-child td {
+        padding-bottom: 20px;
+    }
+
+    form table :not(:first-child) td {
+        padding: 6px 12px;
+    }
+
+    input,
+    button,
+    select,
+    tr {
+        font-size: 12px;
+    }
+}

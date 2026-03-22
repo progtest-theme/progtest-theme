@@ -1,6 +1,5 @@
 <script lang="ts">
-    import { MenuItem } from "../Main";
-    import cx from "classnames";
+    import type { MenuItem } from "./Main.ts";
 
     export let data: MenuItem;
 </script>
@@ -8,16 +7,14 @@
 <article>
     <a href={data.link} class="subject">
         <div class="subject-title">{data.title}</div>
-        <div class={cx("icon", data.icon)}></div>
+        <div class="icon" style='background-image: url("{data.icon}")'></div>
         <div class="subject-body">{data.text}</div>
         {#if data.footer}
             <div class="subject-footer">{data.footer}</div>
         {/if}
     </a>
     {#if data.subjectHomepage}
-        <a class="subject-homepage" href={data.subjectHomepage}
-            >Stránky předmětu</a
-        >
+        <a class="subject-homepage" href={data.subjectHomepage}>Stránky předmětu</a>
     {/if}
 </article>
 
@@ -72,5 +69,15 @@
         color: inherit;
         border-radius: 2px;
         text-shadow: 0 1px 0 #455a64;
+    }
+
+    .icon {
+        width: 70px;
+        height: 70px;
+        background-size: cover;
+        background-repeat: no-repeat;
+        position: absolute;
+        right: 14px;
+        top: 14px;
     }
 </style>

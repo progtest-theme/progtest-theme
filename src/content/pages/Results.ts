@@ -1,7 +1,10 @@
-import { ExtensionSettings } from "../../settings";
+import type { ExtensionSettings } from "../../settings";
+
 import { Logged } from "./Logged";
 
 export class Results extends Logged {
+    className = "results";
+
     constructor(settings: ExtensionSettings) {
         super(settings);
     }
@@ -22,7 +25,7 @@ export class Results extends Logged {
         // mark number of columns
         const c: number[] = [];
         let i = 0;
-        const qsel = document.querySelector("tr.resHdr:nth-child(1)");
+        const qsel = document.querySelector("thead > tr:nth-child(1)");
         if (qsel != null) {
             qsel.childNodes.forEach((e) => {
                 if (!(e instanceof HTMLElement)) return;
@@ -34,12 +37,10 @@ export class Results extends Logged {
             c.shift();
             c.forEach((e) => {
                 styles +=
-                    "tr.resRow > td:nth-child(" +
-                    (e + 1) +
-                    ") {border-left: thin solid rgba(0, 0, 0, 0.125);font-weight: 500;}";
+                    "tbody > tr > td:nth-child(" + (e + 1) + ") {border-left: thin solid #aaa;font-weight: bold;}";
             });
 
-            styles += "tr.resRow > td:last-child {font-weight: 500;}";
+            styles += "tr > td:last-child {font-weight: bold;}";
         }
 
         const styleSheet = document.createElement("style");

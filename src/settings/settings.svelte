@@ -1,6 +1,7 @@
 <script lang="ts">
     import { onMount } from "svelte";
-    import { DEFAULT_SETTINGS, ExtensionSettings } from "../settings";
+    import type { ExtensionSettings } from "../settings.ts";
+    import { DEFAULT_SETTINGS, Theme, ThemeMode } from "../settings.ts";
     import packageJson from "../../package.json";
     import { slide } from "svelte/transition";
     import Button from "../components/button.svelte";
@@ -13,7 +14,7 @@
 
     onMount(async () => {
         if (typeof chrome !== "object") return;
-        chrome.storage.local.get(DEFAULT_SETTINGS, function (localSettings) {
+        chrome.storage.local.get(DEFAULT_SETTINGS, function(localSettings) {
             if (localSettings === undefined) return;
             settings = localSettings as ExtensionSettings;
             console.log("Settings loaded!", settings);
@@ -21,15 +22,13 @@
         hasPermissions = await chrome.permissions.contains({
             origins: [
                 "https://progtest.fit.cvut.cz/*",
-                "https://courses.fit.cvut.cz/data/courses-all.json",
-            ],
+                "https://courses.fit.cvut.cz/data/courses-all.json"
+            ]
         });
         console.log("Permission check", hasPermissions);
 
         // explicit click listener needed because Firefox is dumb
-        document
-            .getElementById("permissionBtn")
-            ?.addEventListener("click", grantPermissions);
+        document.getElementById("permissionBtn")?.addEventListener("click", grantPermissions);
     });
 
     function handleSubmit() {
@@ -39,7 +38,7 @@
             if (typeof chrome === "object") {
                 chrome.tabs.reload({ bypassCache: true });
             }
-            setTimeout(function () {
+            setTimeout(function() {
                 showSuccess = false;
             }, 1500);
         };
@@ -57,8 +56,8 @@
                 .request({
                     origins: [
                         "https://progtest.fit.cvut.cz/*",
-                        "https://courses.fit.cvut.cz/data/courses-all.json",
-                    ],
+                        "https://courses.fit.cvut.cz/data/courses-all.json"
+                    ]
                 })
                 .then((granted) => {
                     if (granted) {
@@ -95,11 +94,7 @@
         border-bottom: 1px solid var(--divider-color);
     "
         >
-            <img
-                src="../themes/assets/favicon.ico"
-                alt="Progtest"
-                style="width: 24px;"
-            />
+            <img src="../themes/assets/favicon.ico" alt="Progtest" style="width: 24px;" />
             <p style="line-height: 20px;">Themes</p>
         </div>
 
@@ -118,27 +113,35 @@
                 align-items: center;
             "
                 >
-                    <iconify-icon
-                        icon="tabler:palette"
-                        style="width: 16px; display: block;"
+                    <iconify-icon icon="tabler:palette" style="width: 16px; display: block;"
                     ></iconify-icon>
                     <p style="font-weight: 500;">Select your theme</p>
                 </div>
-                <select
-                    bind:value={settings.theme}
-                    style="padding: 2px 4px; border-radius: 4px;"
+                <select bind:value={settings.theme} style="padding: 2px 4px; border-radius: 4px;">
+                    {#each Object.keys(Theme) as theme (theme)}
+                        <option value={theme}>{theme.charAt(0).toUpperCase() + theme.slice(1).toLowerCase()}</option>
+                    {/each}
+                </select>
+                <div
+                    style="
+                display: flex;
+                gap: 2px;
+                align-items: center;
+            "
                 >
-                    <option value="orig">Original</option>
-                    <option value="orig-dark">Original Dark</option>
-                    <option value="light">Light</option>
-                    <option value="dark">Dark</option>
-                    <option value="automatic">Automatic</option>
+                    <iconify-icon icon="tabler:palette" style="width: 16px; display: block;"
+                    ></iconify-icon>
+                    <p style="font-weight: 500;">Select theme mode</p>
+                </div>
+                <select bind:value={settings.themeMode} style="padding: 2px 4px; border-radius: 4px;">
+                    {#each Object.keys(ThemeMode) as themeMode (themeMode)}
+                        <option value={themeMode}>{themeMode.charAt(0).toUpperCase() + themeMode.slice(1).toLowerCase()}</option>
+                    {/each}
                 </select>
             </div>
 
-            {#if !["orig", "orig-dark"].includes(settings.theme)}
-                <div
-                    style="
+            <div
+                style="
                 display: flex;
                 flex-direction: column;
                 gap: 8px;
@@ -146,58 +149,43 @@
                 border-top: 1px solid var(--divider-color);
                 padding-top: 12px;
             "
-                >
-                    <div
-                        style="
+            >
+                <div
+                    style="
                     display: flex; 
                     gap: 2px; 
                     align-items: center;
                 "
-                    >
-                        <iconify-icon
-                            icon="tabler:settings"
-                            style="width: 16px; display: block;"
-                        ></iconify-icon>
-                        <p style="font-weight: 500;">Theme settings</p>
-                    </div>
-                    <div
-                        style="
+                >
+                    <iconify-icon icon="tabler:settings" style="width: 16px; display: block;"
+                    ></iconify-icon>
+                    <p style="font-weight: 500;">Theme settings</p>
+                </div>
+                <div
+                    style="
                     display: flex;
                     flex-direction: column;
                     gap: 4px;
                 "
-                    >
-                        <label style="display: block">
-                            <input
-                                type="checkbox"
-                                bind:checked={settings.autohideResults}
-                            />
-                            Autohide results
-                        </label>
-                        <label style="display: block">
-                            <input
-                                type="checkbox"
-                                bind:checked={settings.showNotifications}
-                            />
-                            Show notifications
-                        </label>
-                        <label style="display: block">
-                            <input
-                                type="checkbox"
-                                bind:checked={settings.syntaxHighlighting}
-                            />
-                            Syntax highlighting
-                        </label>
-                        <label style="display: block">
-                            <input
-                                type="checkbox"
-                                bind:checked={settings.playSounds}
-                            />
-                            Play sounds
-                        </label>
-                    </div>
+                >
+                    <label style="display: block">
+                        <input type="checkbox" bind:checked={settings.autohideResults} />
+                        Autohide results
+                    </label>
+                    <label style="display: block">
+                        <input type="checkbox" bind:checked={settings.showNotifications} />
+                        Show notifications
+                    </label>
+                    <label style="display: block">
+                        <input type="checkbox" bind:checked={settings.syntaxHighlighting} />
+                        Syntax highlighting
+                    </label>
+                    <label style="display: block">
+                        <input type="checkbox" bind:checked={settings.playSounds} />
+                        Play sounds
+                    </label>
                 </div>
-            {/if}
+            </div>
 
             <div
                 style="
@@ -240,7 +228,7 @@
         >
             <a
                 class="version"
-                href="https://github.com/keombre/progtest-theme"
+                href="https://github.com/progtest-theme/progtest-theme"
                 target="_blank"
                 style="
             display: inline-flex; 
@@ -255,7 +243,8 @@
                 <span>Version {version}</span>
             </a>
         </div>
-    {:else}<div
+    {:else}
+        <div
             style="
         display: flex; 
         flex-direction: column; 
@@ -274,17 +263,13 @@
         border-bottom: 1px solid var(--divider-color);
     "
             >
-                <img
-                    src="../themes/assets/favicon.ico"
-                    alt="Progtest"
-                    style="width: 24px;"
-                />
+                <img src="../themes/assets/favicon.ico" alt="Progtest" style="width: 24px;" />
                 <p style="line-height: 20px;">Themes</p>
             </div>
             <p>This extension allows you to change the look of Progtest.</p>
             <p>
-                For the extension to work properly, please grant it permissions
-                to access the following sites:
+                For the extension to work properly, please grant it permissions to access the
+                following sites:
             </p>
             <ul style="flex-grow: 1;">
                 <li>

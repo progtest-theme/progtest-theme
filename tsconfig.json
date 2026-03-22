@@ -1,41 +1,29 @@
 {
-  "include": ["**/*", "./package.json"],
-  "compilerOptions": {
-    // add Bun type definitions
-    "types": [
-      "@emotion/css",
-      "archiver",
-      "bun-types",
-      "chrome",
-      "minimist",
-      "svelte",
-      "web",
-      "./src/types.d.ts"
-    ],
+    "exclude": ["./build", "./node_modules"],
+    "compilerOptions": {
+        "typeRoots": ["./node_modules/@types", "./@types"],
 
-    // enable latest features
-    "lib": ["DOM", "ESNext"],
-    "module": "esnext",
-    "target": "ES6",
+        // enable latest features
+        "lib": ["DOM", "ESNext"],
+        "module": "esnext",
+        "target": "ES6",
 
-    "resolveJsonModule": true,
+        "resolveJsonModule": true,
 
-    // if TS 5.x+
-    "moduleResolution": "bundler",
-    "noEmit": true,
-    "allowImportingTsExtensions": true,
-    "moduleDetection": "force",
-    // if TS 4.x or earlier
-    // "moduleResolution": "nodenext",
+        "moduleResolution": "bundler",
+        "noEmit": true,
+        "allowImportingTsExtensions": true,
+        "moduleDetection": "force",
 
-    "allowJs": true, // allow importing `.js` from `.ts`
+        "allowJs": true, // allow importing `.js` from `.ts`
 
-    // best practices
-    "strict": true,
-    "forceConsistentCasingInFileNames": true,
-    "skipLibCheck": true,
-    "composite": true,
-    "downlevelIteration": true,
-    "allowSyntheticDefaultImports": true
-  }
+        // best practices
+        "strict": true,
+        "forceConsistentCasingInFileNames": true,
+        "skipLibCheck": true,
+        "composite": true,
+        "downlevelIteration": true,
+        "allowSyntheticDefaultImports": true,
+        "verbatimModuleSyntax": true
+    }
 }
