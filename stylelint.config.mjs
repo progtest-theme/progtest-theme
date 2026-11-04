@@ -6,7 +6,7 @@ export default {
         "selector-id-pattern": "#*",
         "color-hex-length": "short",
         "alpha-value-notation": "number",
-        "color-function-notation": "rgba",
+        "color-function-notation": "legacy",
         "no-descending-specificity": null
     }
 };

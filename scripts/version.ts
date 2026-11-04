@@ -9,7 +9,7 @@ async function writeFormattedJson<Data>(filePath: string, content: Data extends 
         parser: "json",
         ...prettierConfig
     });
-    Bun.write(filePath, output);
+    await Bun.write(filePath, output);
 }
 
 async function incrementVersionInFile(filePath: string, type: "major" | "minor" | "patch") {
@@ -30,7 +30,7 @@ async function incrementVersionInFile(filePath: string, type: "major" | "minor" 
     }
 
     console.log(`Updating ${filePath} to ${content.version}`);
-    writeFormattedJson(filePath, content);
+    await writeFormattedJson(filePath, content);
 }
 
 async function addUpdateToList(updateFile: string) {
@@ -38,7 +38,7 @@ async function addUpdateToList(updateFile: string) {
     const version = packageJson.version as string;
 
     const firefoxManifest = await Bun.file(FIREFOX_MANIFEST).json();
-    const appId = firefoxManifest.applications.gecko.id;
+    const appId = firefoxManifest.browser_specific_settings.gecko.id;
 
     const updateEntry = {
         version,
@@ -54,7 +54,7 @@ async function addUpdateToList(updateFile: string) {
     }
 
     console.log(`Adding ${version} to ${updateFile}`);
-    writeFormattedJson(updateFile, updateJson);
+    await writeFormattedJson(updateFile, updateJson);
 }
 
 async function main() {
@@ -77,7 +77,7 @@ async function main() {
 
     const type = args.major ? "major" : args.minor ? "minor" : "patch";
 
-    for (const file of [CHROME_MANIFEST, FIREFOX_MANIFEST, "./manifests/debug.json", "./package.json"]) {
+    for (const file of [CHROME_MANIFEST, FIREFOX_MANIFEST, "./package.json"]) {
         await incrementVersionInFile(file, type);
     }
 

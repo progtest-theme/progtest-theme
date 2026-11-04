@@ -1,6 +1,6 @@
 {
     "name": "progtest-theme",
-    "version": "1.3.0",
+    "version": "1.4.0",
     "description": "Theme manager for ProgTest",
     "main": "src/background.js",
     "scripts": {
@@ -8,8 +8,8 @@
         "build:firefox": "bun run build && bun run scripts/package.ts --firefox",
         "build:chrome": "bun run build && bun run scripts/package.ts --chrome",
         "dev": "bun run scripts/dev.ts",
-        "lint": "stylelint **/*.css; eslint .",
-        "lint:fix": "prettier --write .; stylelint **/*.css --fix; eslint . --fix",
+        "lint": "stylelint \"src/**/*.css\" && eslint .",
+        "lint:fix": "prettier --write . && stylelint \"src/**/*.css\" --fix && eslint . --fix",
         "version": "bun run scripts/version.ts"
     },
     "repository": {
@@ -41,7 +41,7 @@
         "prettier-plugin-svelte": "^4.1.1",
         "stylelint": "^18.0.0",
         "stylelint-config-standard": "^41.0.0",
-        "typescript": "^7.0.2",
+        "typescript": "~6.0.3",
         "typescript-eslint": "^8.72.1",
         "web-ext": "^10.8.0"
     },

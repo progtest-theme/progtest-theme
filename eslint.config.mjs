@@ -6,12 +6,12 @@ import globals from "globals";
 import tseslint from "typescript-eslint";
 
 export default defineConfig([
+    { ignores: ["build/"] },
     js.configs.recommended,
     tseslint.configs.recommended,
     prettier,
     ...svelte.configs.recommended,
     {
-        ignores: ["build/"],
         languageOptions: {
             ecmaVersion: "latest",
             sourceType: "module",
