@@ -1,306 +1,257 @@
 body.ptt-login {
-    select[name="UID_UNIVERSITY"] {
-        width: -webkit-fill-available;
+    --login-surface: #fff;
+    --login-text: #353535;
+    --login-sidebar: #26a69a;
+
+    padding: 48px 16px 32px;
+
+    &.dark {
+        --login-surface: #252525;
+        --login-text: #e5e5e5;
+        --login-sidebar: #263238;
     }
 
     .appName {
+        margin: 0 0 48px;
+        color: var(--login-text);
         text-align: center;
-        font-size: 4.5rem;
+        font-size: clamp(2rem, 7vw, 4.5rem);
         font-weight: 300;
-        line-height: 0.6;
-        margin-top: -38px;
         letter-spacing: 2px;
-        text-shadow: 0 0 1px rgb(0, 0, 0, 0.25);
-        color: #464646;
 
         b {
-            font-weight: 500;
-            color: #212121;
-        }
-
-        body.dark & {
-            text-shadow: 0 0 2px rgb(255, 255, 255, 0.25);
-            color: #cacaca;
-
-            b {
-                color: #f5f5f5;
-            }
+            font-weight: 600;
         }
     }
 
-    .loginForm table {
-        border: none !important;
-        box-shadow: none !important;
-        border-radius: 7px !important;
-        background-color: #fff !important;
-
-        td {
-            background: transparent !important;
-            border: none !important;
-        }
-
-        body.dark & {
-            background-color: #252525 !important;
-        }
+    form {
+        display: grid;
+        grid-template-columns: 270px 350px;
+        align-items: center;
+        justify-content: center;
+        margin: auto;
+        max-width: 620px;
+        color: var(--login-text);
+        font-size: 1rem;
     }
 
-    .loginForm .insBox {
-        position: absolute;
-        width: 350px;
-        margin: 0;
-        height: 380px;
+    form > center {
+        grid-column: 2;
+        grid-row: 1;
+        width: 100%;
+        min-width: 0;
+    }
+
+    .insBox {
+        box-sizing: border-box;
+        width: 100%;
+        min-height: 420px;
+        padding: 28px !important;
+        border: none;
         border-radius: 7px;
-        box-shadow: 0 2px 42px 0 rgb(0, 0, 0, 0.28);
-        left: calc(50% - 50px);
-        top: 160px;
-        background: #fff;
-
-        body.dark & {
-            background: #252525;
-        }
+        box-shadow: 0 2px 42px rgb(0 0 0 / 0.28);
+        background: var(--login-surface);
+        font-size: 1rem !important;
     }
 
-    .loginForm .insBox > table {
-        padding: 25px;
-        text-align: center;
+    .insBox > div:has(> select[name="UID_UNIVERSITY"]) {
+        display: none;
+    }
 
-        &::before {
-            content: "";
-            width: 260px;
-            height: 90%;
-            position: absolute;
-            top: 5%;
-            left: -250px;
-            box-shadow: 0 5px 23px 0 rgb(0, 0, 0, 0.45);
-            z-index: -1;
-            border-radius: 7px;
-            background: #26a69a;
-        }
-
-        body.dark &::before {
-            background: #263238;
-        }
+    .insBox > div:has(> select[name="lang"]) {
+        position: relative;
+        align-self: flex-end;
+        margin-bottom: 24px !important;
     }
 
     select[name="lang"] {
-        outline: none;
-        background: none;
+        width: auto;
+        padding: 4px 30px 4px 6px;
         border: none;
+        border-bottom: 1px solid currentcolor;
         border-radius: 0;
-        padding-right: 26px;
-        font-weight: 600;
-        padding-bottom: 4px;
+        background: transparent;
+        color: var(--login-text);
+        font: inherit;
         cursor: pointer;
-        border-bottom: thin solid rgb(0, 0, 0, 0.25);
-        color: #353535;
-
-        body.dark & {
-            border-bottom: thin solid rgb(255, 255, 255, 0.25);
-            color: #d1d1d1;
-        }
     }
 
     #langGlobe {
         position: absolute;
-        right: 28px;
-        top: 3px;
-        z-index: -1;
+        top: 7px;
+        right: 15px;
+        width: 16px;
+        pointer-events: none;
+    }
 
-        body.dark & {
-            filter: brightness(0) invert(1);
-        }
+    &.dark #langGlobe {
+        filter: brightness(0) invert(1);
     }
 
     #uniSelect {
-        position: absolute;
-        top: 260px;
-        left: calc(50% - 300px);
-        width: 250px;
-        font-size: 12pt;
+        grid-column: 1;
+        grid-row: 1;
+        z-index: 1;
+        padding: 20px 0;
+        border-radius: 7px 0 0 7px;
+        background: var(--login-sidebar);
+        box-shadow: 0 5px 23px rgb(0 0 0 / 0.3);
     }
 
     #uniSelect .uniOption {
-        padding: 5px 0 5px 15px;
+        display: block;
+        box-sizing: border-box;
+        width: 100%;
+        padding: 9px 16px;
+        border: none;
+        border-left: 3px solid transparent;
+        background: transparent;
+        color: #fff;
+        font: inherit;
+        text-align: left;
         cursor: pointer;
-        color: #2e2e2e;
 
         &[active] {
-            padding-left: 12px;
-            border-left: 3px solid #ffeb3b;
-            font-weight: 500;
-            background: rgb(255, 255, 255, 0.075);
-            box-shadow: 0 1px 4px -3px rgb(0, 0, 0, 0.5);
+            border-left-color: #ffeb3b;
+            background: rgb(255 255 255 / 0.1);
+            font-weight: 600;
         }
 
         &:hover {
-            background: rgb(255, 255, 255, 0.125);
+            background: rgb(255 255 255 / 0.15);
         }
 
-        body.dark & {
-            color: #d6d6d6;
+        &:focus-visible {
+            outline: 2px solid #ffeb3b;
+            outline-offset: -3px;
         }
     }
 
-    .loginForm .insBox > table > tbody > tr:nth-child(1) {
-        position: absolute;
-        left: -110px;
-        top: 40px;
+    :is(#msentraid, #shibboleth) {
+        margin: auto 0 !important;
+
+        a {
+            display: inline-block;
+            max-width: 100%;
+            border-radius: 3px;
+            background: #fff;
+        }
+
+        img {
+            display: block;
+            max-width: 100%;
+            height: auto;
+        }
     }
 
-    .loginForm .insBox > table > tbody > tr:nth-child(2) {
-        display: none;
+    &.dark {
+        :is(#msentraid, #shibboleth) a {
+            border: none !important;
+            background: transparent !important;
+        }
+
+        #shibboleth img {
+            filter: brightness(0) invert(1);
+        }
+
+        #msentraid img {
+            content: url("../../assets/microsoft-dark.svg");
+        }
     }
 
-    .loginForm div.bUpd input,
-    .loginForm div.bLink a {
-        position: absolute;
-        width: 120px;
-        color: #fff;
-        padding: 10px 0;
-        border-radius: 3px;
-        box-shadow: 0 1px 3px 0 rgb(0, 0, 0, 0.25);
+    #ldap {
+        margin: 0 !important;
+    }
+
+    #ldap > div:has(> input) {
+        margin: 0 0 20px !important;
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 0.85rem;
+        }
+
+        b {
+            font-weight: 400;
+        }
+
+        input.std {
+            box-sizing: border-box;
+            float: none !important;
+            width: 100% !important;
+            min-width: 0;
+            padding: 7px 2px;
+            border: none;
+            border-bottom: 1px solid #888;
+            border-radius: 0;
+            background: transparent;
+            color: var(--login-text);
+            font: inherit;
+
+            &:focus-visible {
+                outline: 2px solid #26a69a;
+                outline-offset: 2px;
+            }
+        }
+    }
+
+    #ldap > div:has(> .bUpd) {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 10px;
+
+        br {
+            display: none;
+        }
+    }
+
+    form .bUpd input {
+        position: static;
+        max-width: 100%;
+        padding: 10px 14px;
         border: none;
-        font-size: 12pt;
-        left: calc(50% - 60px);
-        bottom: 80px;
+        border-radius: 3px;
+        background: #009688;
+        color: #fff;
+        font: inherit;
         cursor: pointer;
-        background-color: #009688;
-        outline-color: #004d40;
 
         &:hover {
-            background: #26a69a;
-        }
-
-        &:active {
             background: #00796b;
         }
 
-        body.dark & {
-            outline-color: #b2dfdb;
+        &:focus-visible {
+            outline: 2px solid #26a69a;
+            outline-offset: 2px;
         }
     }
 
-    .loginForm div.bLink a:focus {
-        outline-offset: 0;
-        outline-style: initial;
-        outline-width: 5px;
-    }
-
-    .loginForm td:nth-child(2) > div.bUpd input {
-        bottom: 25px;
-        font-size: 10pt;
-        width: 100px;
-        left: calc(50% - 50px);
-        padding: 7px 0;
-    }
-
-    .loginForm #shib1 > td > img {
-        background: none;
-        padding-left: 0;
-
-        body.dark & {
-            box-sizing: border-box;
-            background: url("../../assets/shibboleth-inverted.png") no-repeat;
-            background-size: 200px auto;
-            width: 200px;
-            height: 70px;
-            padding-left: 200px;
-        }
-    }
-
-    .loginForm #shib2 > td {
-        padding-top: 40px;
-        font-size: 12pt;
-    }
-
-    .loginForm :is(#ldap1, #ldap2, #ldap3) {
-        input {
-            border: 0;
-            outline: none;
-            font-size: 16pt;
-            position: absolute;
-            left: 50px;
-            width: 250px;
-            background: transparent !important;
-            font-weight: 400 !important;
-            padding: 3px 0 !important;
-            min-width: 250px !important;
-            border-bottom: thin solid rgb(0, 0, 0, 0.3);
-
-            body.dark & {
-                border-bottom: thin solid rgb(255, 255, 255, 0.3);
-            }
+    @media (width <= 680px) {
+        .appName {
+            margin-bottom: 24px;
         }
 
-        td:nth-child(1) > b {
-            font-weight: 100;
-            position: absolute;
-            left: 50px;
-            font-size: 16pt;
-            cursor: pointer;
-            width: 250px;
-            text-align: left;
-            transition: font-size 0.2s ease,
-            top 0.2s ease;
-            color: #585858;
-            background: #fff;
-
-            &[moved] {
-                font-size: 10pt;
-                cursor: default;
-                background: transparent;
-                border: none;
-            }
-
-            body.dark & {
-                color: #cdcdcd;
-                background: #252525;
-            }
-        }
-    }
-
-    /* Username field */
-    .loginForm #ldap1 {
-        input {
-            top: 70px;
+        form {
+            grid-template-columns: minmax(0, 400px);
         }
 
-        td:nth-child(1) > b {
-            top: 70px;
-
-            &[moved] {
-                top: 50px;
-            }
-        }
-    }
-
-    /* Password field */
-    .loginForm #ldap2 {
-        input {
-            top: 130px;
+        #uniSelect {
+            grid-column: 1;
+            grid-row: 1;
+            border-radius: 7px 7px 0 0;
         }
 
-        td:nth-child(1) > b {
-            top: 130px;
-
-            &[moved] {
-                top: 110px;
-            }
-        }
-    }
-
-    /* TOTP field */
-    .loginForm #ldap3 {
-        input {
-            top: 190px;
+        form > center {
+            grid-column: 1;
+            grid-row: 2;
         }
 
-        td:nth-child(1) > b {
-            top: 190px;
-
-            &[moved] {
-                top: 170px;
-            }
+        .insBox {
+            min-height: 380px;
+            padding: 24px !important;
+            border-radius: 0 0 7px 7px;
         }
     }
 }
