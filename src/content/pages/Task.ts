@@ -1,4 +1,5 @@
 import type { ExtensionSettings } from "../../settings.ts";
+import { formatCountdown } from "../countdown";
 
 import { Logged } from "./Logged";
 
@@ -79,28 +80,8 @@ export class Task extends Logged {
 
         const loop = () => {
             const remaining = (deadline - new Date().getTime()) / 1000;
-            let t = "Zbýv";
-            if (remaining > 86400) {
-                const days = Math.floor(remaining / 86400);
-                t += (
-                    ["", "á <b>{} den", "ají <b>{} dny", "ají <b>{} dny", "ají <b>{} dny"][
-                        remaining / 86400
-                    ] || "á <b>{} dní"
-                ).replace("{}", days.toString());
-                t += ", ";
-            } else {
-                t += "á <b>";
-            }
-            const hours = remaining % 86400;
-            const minutes = hours % 3600;
-            t +=
-                Math.floor(hours / 3600) +
-                "h, " +
-                Math.floor(minutes / 60) +
-                "m a " +
-                Math.floor(minutes % 60) +
-                "s</b>";
-            elm.innerHTML = t;
+            const display = formatCountdown(remaining);
+            elm.innerHTML = `${display.prefix} <b>${display.time}</b>`;
         };
 
         loop();
@@ -109,9 +90,7 @@ export class Task extends Logged {
 
     static markResultsTable() {
         document
-            .querySelectorAll(
-                "form > center > div:not(:nth-child(1)) table tr:nth-child(4) li > ul:only-child"
-            )
+            .querySelectorAll("form > center > div:not(:nth-child(1)) table tr:nth-child(4) li > ul:only-child")
             .forEach((e) => {
                 const node = e.previousSibling;
                 let state = "";
@@ -216,9 +195,7 @@ export class Task extends Logged {
                         scoreElem.appendChild(multElem);
                     } else if (
                         f.innerText.includes("Celková doba běhu:") ||
-                        f.innerText.includes(
-                            "Vyčerpání limitu na celý test, program násilně ukončen"
-                        ) ||
+                        f.innerText.includes("Vyčerpání limitu na celý test, program násilně ukončen") ||
                         f.innerText.includes("Program násilně ukončen po")
                     ) {
                         const time = [...f.innerText.matchAll(/(\d+.\d+)/g)];
@@ -242,9 +219,7 @@ export class Task extends Logged {
                             } else {
                                 timeElem.setAttribute("title", "Celkový čas");
                                 timeElem.innerHTML =
-                                    "<label>⏱️ <b>" +
-                                    parseFloat(time[0][1]).toFixed(3) +
-                                    "s</b></label>";
+                                    "<label>⏱️ <b>" + parseFloat(time[0][1]).toFixed(3) + "s</b></label>";
                             }
                             badges.appendChild(timeElem);
                         }
@@ -312,24 +287,17 @@ export class Task extends Logged {
         }
 
         // hide the rest
-        [
-            "rtbSepCell",
-            "rtbOkSepCell",
-            "rtbHalfSepCell",
-            "rtbXSepCell",
-            "rtbFailSepCell",
-            "rtbEditSepCell"
-        ].forEach((n) => {
-            document
-                .querySelectorAll("table#maintable tbody tr:has(td." + n + ")")
-                .forEach((e: Element) => {
+        ["rtbSepCell", "rtbOkSepCell", "rtbHalfSepCell", "rtbXSepCell", "rtbFailSepCell", "rtbEditSepCell"].forEach(
+            (n) => {
+                document.querySelectorAll("table#maintable tbody tr:has(td." + n + ")").forEach((e: Element) => {
                     if (!(e instanceof HTMLElement)) return;
 
                     e.classList.add("dropDownHeader");
                     e.addEventListener("click", toggleDropDown);
                     e.click();
                 });
-        });
+            }
+        );
     }
 
     easterEgg() {
