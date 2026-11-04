@@ -116,7 +116,7 @@ export class Logged implements IPage {
     highlightCode() {
         document.querySelectorAll<HTMLElement>("pre:not(.hljs), code:not(.hljs), tt:not(.hjls)").forEach((block) => {
             if (this.settings.syntaxHighlighting) {
-                block.innerHTML = block.textContent || block.innerText || "";
+                block.textContent = block.textContent || block.innerText || "";
 
                 hljs.highlightElement(block);
             } else {
