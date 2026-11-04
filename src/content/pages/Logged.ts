@@ -12,7 +12,7 @@ interface LoggedTask {
 export class Logged implements IPage {
     className = "logged";
 
-        topButton = `
+    topButton = `
 <svg id="upTop" xmlns="http://www.w3.org/2000/svg" viewBox="-1 -0.5 26 26">
     <path d="M12 8l-6 6 1.41 1.41L12 10.83l4.59 4.58L18 14z"></path>
 </svg>
@@ -130,22 +130,23 @@ export class Logged implements IPage {
             return;
         }
 
-        const tasks = await Logged.taskSpider();
+        const tasks = await Logged.taskSpider().catch((error) => {
+            console.error("Failed to check for new tasks", error);
+            return [];
+        });
 
-        if (!localStorage.tasks) {
-            localStorage.tasks = JSON.stringify(
-                tasks?.map((e) => {
-                    e["seen"] = true;
-                    return e;
-                })
-            );
+        let localTasks: LoggedTask[];
+        try {
+            localTasks = JSON.parse(localStorage.tasks || "[]");
+        } catch {
+            localTasks = [];
+        }
+
+        if (!Array.isArray(localTasks) || !localTasks.length) {
+            localStorage.tasks = JSON.stringify(tasks.map((task) => ({ ...task, seen: true })));
         } else {
-            const localTasks = JSON.parse(localStorage.tasks) as LoggedTask[];
-            const notify =
-                tasks?.filter((t) => {
-                    return !localTasks.some((e) => e.link === t.link);
-                }) ?? [];
-            this.displayNotifications(notify?.concat(localTasks.filter((e) => e.seen == false)) ?? []);
+            const notify = tasks.filter((task) => !localTasks.some((stored) => stored.link === task.link));
+            this.displayNotifications(notify.concat(localTasks.filter((task) => !task.seen)));
             localStorage.tasks = JSON.stringify(localTasks.concat(notify));
         }
     }
@@ -160,7 +161,11 @@ export class Logged implements IPage {
         elems.forEach((e) => {
             const node = document.createElement("a");
             node.href = e.link;
-            node.innerHTML = `<i>${e.subject}</i> Nová úloha:<br /><b>${e.name}</b>`;
+            const subject = document.createElement("i");
+            subject.textContent = e.subject;
+            const name = document.createElement("b");
+            name.textContent = e.name;
+            node.append(subject, " Nová úloha:", document.createElement("br"), name);
             node.addEventListener("click", Logged.notifySeen.bind(this));
             frame.appendChild(node);
         });
@@ -169,7 +174,7 @@ export class Logged implements IPage {
     static getLinksFromHTML(text: string, href: string) {
         text = text.replace(/<script[^>]*>([\S\s]*?)<\/script>/gim, "");
         const doc = new DOMParser().parseFromString(text, "text/html");
-        const allLinks = doc.querySelectorAll<HTMLAnchorElement>(`.bigButLink a[href*="${href}"]`);
+        const allLinks = doc.querySelectorAll<HTMLAnchorElement>(`:is(.menuItem2, .menuItem3) > a[href*="X=${href}"]`);
         const links: HTMLAnchorElement[] = [];
         allLinks.forEach((link) => {
             if (link.href && !link.href.includes("javascript:")) {
@@ -179,44 +184,33 @@ export class Logged implements IPage {
         return links;
     }
 
-    static async taskSpider() {
-        const main = await fetch(
-            new URL("index.php?X=Main", window.location.protocol + "//" + window.location.hostname)
-        );
+    static async taskSpider(): Promise<LoggedTask[]> {
+        const main = await fetch(new URL("index.php?X=Main", window.location.origin));
         if (!main.ok || main.redirected) {
             return [];
         }
 
         const mainText = await main.text();
         const subjects = Logged.getLinksFromHTML(mainText, "Course");
-        if (!subjects) {
-            return [];
-        }
         const tasks: LoggedTask[] = [];
 
         for (const e of subjects) {
             const course = await fetch(e.href);
             if (!course.ok || course.redirected) {
-                return;
+                continue;
             }
             const text = await course.text();
             const taskLinks = Logged.getLinksFromHTML(text, "TaskGrp");
-            if (!taskLinks) {
-                return;
-            }
-
             taskLinks.forEach((f) => {
                 const url = new URL(f.href);
-                const name = (f.parentNode?.parentNode?.parentNode?.parentNode?.firstElementChild || undefined) as
-                    | HTMLElement
-                    | undefined;
+                const name = f.querySelector("img")?.nextElementSibling?.textContent?.trim();
                 if (!name) {
                     return;
                 }
                 tasks.push({
-                    subject: e.innerText,
+                    subject: e.querySelector("b")?.textContent?.trim() ?? "",
                     link: "/" + url.search,
-                    name: name?.innerText,
+                    name,
                     seen: false
                 });
             });
@@ -230,11 +224,7 @@ export class Logged implements IPage {
 
     static notifySeen(event: MouseEvent) {
         const localTasks = JSON.parse(localStorage.tasks) as LoggedTask[];
-        const target = event.target;
-        if (!(target instanceof HTMLElement)) {
-            return;
-        }
-        const linkNode = target.nodeName == "A" ? target : target.parentElement;
+        const linkNode = event.currentTarget;
         if (!(linkNode instanceof HTMLAnchorElement)) {
             return;
         }
