@@ -1,0 +1,380 @@
+body:is(.ptt-task, .ptt-task-group) {
+    --task-surface: #fff;
+    --task-subtle: #f5f5f5;
+    --task-heading: #eceff1;
+    --task-border: #d1d1d1;
+    --task-text: #424242;
+    --task-muted: #666;
+    --task-link: #455a64;
+
+    &.dark {
+        --task-surface: #0e0e0e;
+        --task-subtle: #161616;
+        --task-heading: #1c1e1f;
+        --task-border: #313131;
+        --task-text: #eee;
+        --task-muted: #aaa;
+        --task-link: #b0bec5;
+
+        color-scheme: dark;
+    }
+
+    .task-document-layout {
+        box-sizing: border-box;
+        width: 90%;
+        max-width: none;
+        margin: 20px auto;
+        overflow: visible;
+        text-align: left;
+    }
+
+    .task-panel {
+        box-sizing: border-box;
+        width: 100%;
+        padding: 0;
+        margin: 0;
+        border: 1px solid var(--task-border);
+        border-spacing: 0;
+        table-layout: fixed;
+        border-radius: 5px;
+        background: var(--task-surface);
+        color: var(--task-text);
+        box-shadow: none;
+        font-size: 14px;
+        line-height: 1.65;
+        text-align: left;
+        overflow-wrap: anywhere;
+    }
+
+    .task-panel > tbody > tr > td {
+        padding: 8px 22px;
+        font-size: 14px;
+        vertical-align: top;
+    }
+
+    .task-panel > tbody > tr > td > b {
+        font-size: inherit;
+        font-weight: 600;
+        line-height: inherit;
+    }
+
+    .task-document > tbody > tr:not(:has(> .task-content)) > td {
+        background: var(--task-subtle);
+    }
+
+    .task-document > tbody > tr:not(:has(> .task-content)) > td:first-child {
+        color: var(--task-muted);
+    }
+
+    .task-document > tbody > tr:first-child > td {
+        padding-top: 18px;
+    }
+
+    .task-panel > tbody > tr > td.task-content {
+        padding: 20px 26px !important;
+        border-top: 1px solid var(--task-border);
+        font-size: 15px;
+        line-height: 1.8;
+    }
+
+    .task-content > :first-child {
+        margin-top: 0;
+    }
+
+    .task-content > :last-child {
+        margin-bottom: 0;
+    }
+
+    .task-content p {
+        margin: 0 0 16px;
+    }
+
+    .task-content :is(ul, ol) {
+        padding-left: 24px;
+        margin: 12px 0 18px;
+    }
+
+    .task-content li + li {
+        margin-top: 6px;
+    }
+
+    .task-content :is(h1, h2, h3, h4, h5, h6) {
+        margin: 24px 0 12px;
+        line-height: 1.4;
+    }
+
+    .task-content :is(img, video, svg) {
+        max-width: 100%;
+        height: auto;
+    }
+
+    .task-panel pre,
+    .task-report details > pre {
+        box-sizing: border-box;
+        display: block;
+        width: auto;
+        max-width: 100%;
+        padding: 16px 18px;
+        margin: 16px 0;
+        overflow-x: auto;
+        border: 1px solid var(--task-border);
+        border-radius: 3px;
+        background: var(--task-subtle);
+        color: var(--task-text);
+        font-family: var(--font-monospace);
+        font-size: 13px;
+        line-height: 1.65;
+        white-space: pre;
+        overflow-wrap: normal;
+        tab-size: 4;
+    }
+
+    .task-report details > pre {
+        margin-left: 0 !important;
+    }
+
+    .task-panel input[type="file"] {
+        box-sizing: border-box;
+        min-width: 0;
+        max-width: 100%;
+        padding: 8px;
+        background: var(--task-subtle);
+        color: var(--task-text);
+        font: inherit;
+        font-size: 14px;
+    }
+
+    .task-panel pre :is(b, strong) {
+        font-weight: 700;
+    }
+
+    /* stylelint-disable-next-line selector-no-deprecated -- Native ProgTest inline code. */
+    .task-panel :is(code, tt) {
+        font-size: 0.9em;
+    }
+
+    .task-panel hr {
+        margin: 20px 0;
+        background: var(--task-border);
+    }
+
+    .task-panel a:not(.bLink a) {
+        color: var(--task-link);
+        text-decoration: underline;
+        text-underline-offset: 3px;
+    }
+
+    .task-report {
+        color: var(--task-text);
+        font-size: 14px;
+        line-height: 1.65;
+        font-variant-numeric: tabular-nums;
+    }
+
+    .task-report > colgroup > col:first-child {
+        width: 316px;
+    }
+
+    .task-report:has(details > pre) {
+        width: 100%;
+        table-layout: fixed;
+    }
+
+    .task-report > tbody > tr > td {
+        padding: 8px 12px;
+        font-size: 14px;
+        line-height: 1.65;
+        vertical-align: top;
+    }
+
+    .task-report > tbody > tr:not(:has(> [class*="SepCell"])) > td:first-child:not([colspan]) {
+        color: var(--task-muted);
+    }
+
+    .task-report > tbody > tr:not(:has(> [class*="SepCell"])) > td:first-child:not([colspan]) > b {
+        font-weight: 400;
+    }
+
+    .task-report > tbody > tr > td > ul {
+        padding: 0;
+        margin: 4px 0;
+        list-style: none;
+    }
+
+    .task-report > tbody > tr > td > ul > li > ul {
+        padding-left: 0;
+        margin: 12px 0;
+        list-style: none;
+    }
+
+    .task-report > tbody > tr > td li:not(.testRes) {
+        font-size: 14px;
+        font-weight: 400;
+        line-height: 1.65;
+        letter-spacing: normal;
+    }
+
+    .task-report > tbody > tr > td li.testRes {
+        font-size: 14px;
+        font-weight: 600;
+        line-height: 1.65;
+        letter-spacing: normal;
+    }
+
+    .task-report > tbody > tr > td > ul > li.task-summary-line {
+        max-width: 1000px;
+        padding: 6px 0;
+        margin: 0;
+        color: var(--task-text);
+        font-size: 14px;
+        font-weight: 400;
+        line-height: 1.6;
+        letter-spacing: normal;
+        list-style: none;
+    }
+
+    .task-report > tbody > tr > td > ul > li.task-summary-start {
+        padding-top: 14px;
+        margin-top: 14px;
+        border-top: 1px solid var(--task-border);
+    }
+
+    .task-report-field {
+        display: grid;
+        grid-template-columns: minmax(180px, 300px) minmax(0, 1fr);
+        gap: 16px;
+        max-width: 1000px;
+        font-size: 14px;
+        line-height: 1.65;
+    }
+
+    .task-summary-label {
+        color: var(--task-muted);
+        font-weight: 400;
+    }
+
+    .task-summary-value {
+        min-width: 0;
+        overflow-wrap: anywhere;
+        font-variant-numeric: tabular-nums;
+        font-weight: 500;
+    }
+
+    .task-summary-line:last-child .task-summary-value {
+        font-weight: 600;
+    }
+
+    .task-content > table {
+        display: block;
+        max-width: 100%;
+        overflow-x: auto;
+    }
+
+    .task-report details {
+        margin: 8px 0;
+    }
+
+    .task-report details > summary {
+        padding: 8px 0;
+        color: var(--task-text);
+        font-size: 14px;
+        line-height: 1.65;
+        cursor: pointer;
+    }
+
+    .task-report details > summary > b {
+        font-weight: 600;
+    }
+
+    :is(.task-panel, .task-report) details:has(> table) {
+        margin: 14px 8px 8px;
+    }
+
+    :is(.task-panel, .task-report) details:has(> table) > summary {
+        padding: 8px 0;
+        color: var(--task-muted);
+        font-size: 14px;
+        cursor: pointer;
+    }
+
+    :is(.task-panel, .task-report) details > table {
+        width: auto;
+        margin: 12px 0 0 !important;
+        border: 1px solid var(--task-border);
+        border-spacing: 0;
+        background: var(--task-surface);
+        box-shadow: none;
+        font-size: 13px;
+        line-height: 1.6;
+        font-variant-numeric: tabular-nums;
+    }
+
+    :is(.task-panel, .task-report) details > table td {
+        padding: 8px 14px;
+        border-bottom: 1px solid var(--task-border);
+    }
+
+    :is(.task-panel, .task-report) details > table tr:first-child td {
+        background: var(--task-subtle);
+        color: var(--task-muted);
+        font-weight: 600;
+    }
+
+    :is(.task-panel, .task-report) details > table td:first-child {
+        color: var(--task-muted);
+    }
+
+    :is(.task-panel, .task-report) details > table .ar {
+        text-align: right;
+    }
+
+    :is(.task-panel, .task-report) details > table .hljs {
+        padding: 0;
+        background: transparent;
+        color: inherit;
+        font-size: 13px;
+    }
+}
+
+body.ptt-task-group {
+    .task-report > tbody > tr:first-child > td.lrtbSepCell {
+        padding: 10px 16px;
+        background: #45535a;
+        color: #fff;
+        font-size: 20px;
+        line-height: 1.4;
+    }
+
+    .task-report > tbody > tr > td > b {
+        font-weight: 500;
+    }
+
+    .task-report > tbody > tr:first-child > td.lrtbSepCell > b {
+        font-weight: 300;
+    }
+
+    .task-report > tbody > tr > td:has(> hr) {
+        padding: 16px;
+        border-top: 1px solid var(--task-border);
+        font-size: 15px;
+        line-height: 1.8;
+        overflow-wrap: anywhere;
+    }
+
+    .task-report > tbody > tr > td > hr:first-child {
+        margin: 0 0 14px;
+        background: var(--task-border);
+    }
+
+    .task-report .bLink {
+        display: flex;
+        justify-content: flex-end;
+    }
+
+    .task-report .bLink a {
+        width: auto;
+        padding: 7px 16px;
+        font-size: 14px;
+        font-weight: 600;
+    }
+}

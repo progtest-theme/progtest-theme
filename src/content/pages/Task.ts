@@ -36,6 +36,7 @@ export class Task extends Logged {
 
         // Mark header
         document.querySelector("form table")?.classList.add("header");
+        Task.stylePanels();
 
         this.replaceCountdown();
 
@@ -73,6 +74,79 @@ export class Task extends Logged {
             loop();
             if (Date.now() >= deadline || !elm.isConnected) clearInterval(timer);
         }, 900);
+    }
+
+    override highlightCode() {
+        Task.preserveSampleFormatting();
+        super.highlightCode();
+    }
+
+    static preserveSampleFormatting() {
+        // Unlabelled preformatted text can be sample input/output with meaningful markup.
+        for (const block of document.querySelectorAll("pre, code, tt")) {
+            if (!/(?:^|\s)(?:language|lang)-[\w-]+(?:\s|$)/.test(block.className)) block.classList.add("hljs");
+        }
+    }
+
+    static stylePanels() {
+        for (const box of document.querySelectorAll(".topLayout, form > center > .newBox, body > center > .newBox")) {
+            if (box.parentElement?.closest(".topLayout")) continue;
+            const table = box.querySelector("table");
+            if (!table) continue;
+            if (!table.classList.contains("header")) {
+                table.classList.add("task-report");
+                for (const body of table.tBodies) {
+                    for (const row of body.rows) {
+                        for (const cell of row.cells) {
+                            for (const list of cell.querySelectorAll(":scope > ul")) {
+                                for (const heading of list.querySelectorAll(":scope > li > :is(b, strong)")) {
+                                    Task.styleReportField(heading);
+                                }
+                                const lines = [...list.children].filter(
+                                    (item) => item.matches("li") && !item.querySelector("ul, ol")
+                                );
+                                lines.forEach((item, index) => {
+                                    item.classList.add("task-summary-line");
+                                    if (index === 0) item.classList.add("task-summary-start");
+                                    Task.styleReportField(item);
+                                });
+                            }
+                        }
+                    }
+                }
+                continue;
+            }
+            box.classList.add("task-document-layout");
+            table.classList.add("task-panel", "task-document");
+            for (const body of table.tBodies) {
+                for (const row of body.rows) {
+                    for (const cell of row.cells) {
+                        if (
+                            cell.colSpan > 1 &&
+                            cell.querySelector(
+                                ":scope > :is(p, pre, ul, ol, table, details, blockquote, h1, h2, h3, h4, h5, h6)"
+                            )
+                        ) {
+                            cell.classList.add("task-content");
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    static styleReportField(item: Element) {
+        const text = item.textContent ?? "";
+        const separator = text.indexOf(":");
+        if (item.children.length || separator < 1 || separator > 80 || !/\s/.test(text[separator + 1] ?? "")) return;
+        const label = document.createElement("span");
+        const value = document.createElement("span");
+        label.className = "task-summary-label";
+        value.className = "task-summary-value";
+        label.textContent = text.slice(0, separator + 1);
+        value.textContent = text.slice(separator + 1);
+        item.classList.add("task-report-field");
+        item.replaceChildren(label, value);
     }
 
     static markResultsTable() {
