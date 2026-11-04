@@ -1,12 +1,14 @@
 {
     "exclude": ["./build", "./node_modules"],
     "compilerOptions": {
+        "rootDir": "./src",
         "typeRoots": ["./node_modules/@types", "./@types"],
+        "types": ["node"],
 
         // enable latest features
         "lib": ["DOM", "ESNext"],
         "module": "esnext",
-        "target": "ES6",
+        "target": "esnext",
 
         "resolveJsonModule": true,
 

@@ -3,8 +3,13 @@
     import type { TaskItem } from "./Course.ts";
     import { onMount } from "svelte";
 
-    export let task: Promise<TaskItem>;
-    export let showModal = false;
+    let {
+        task,
+        showModal = $bindable(false)
+    }: {
+        task: Promise<TaskItem>;
+        showModal?: boolean;
+    } = $props();
 
     const close = () => {
         showModal = false;
@@ -42,10 +47,9 @@
 {#if showModal}
     <div class="dialog" transition:fade={{ duration: 150 }}>
         {#await task then data}
-            <!-- svelte-ignore a11y-click-events-have-key-events -->
-            <!-- svelte-ignore a11y-no-static-element-interactions -->
-            <div on:click|stopPropagation class="modal" transition:fade={{ duration: 150 }}>
-                <div class="modal-close" on:click={close}>✖️</div>
+            <!-- svelte-ignore a11y_click_events_have_key_events, a11y_no_static_element_interactions -->
+            <div onclick={(event) => event.stopPropagation()} class="modal" transition:fade={{ duration: 150 }}>
+                <button type="button" class="modal-close" onclick={close} aria-label="Close">✖️</button>
 
                 <div class="modal-header">
                     <div class="modal-title">
@@ -80,9 +84,7 @@
                                 <span class="mtask-sub-my">{task.submissions ?? "-"}</span>
                                 <span class="mtask-sub-max">/ {task.submissionsMax ?? "-"}</span>
                                 {#if task.submissionsWithPenalty ?? 0 > 0}
-                                    <span class="mtask-sub-pen"
-                                        >(+{task.submissionsWithPenalty})</span
-                                    >
+                                    <span class="mtask-sub-pen">(+{task.submissionsWithPenalty})</span>
                                 {/if}
                             </div>
                             <div class="mtask-score">

@@ -1,14 +1,14 @@
 <script lang="ts">
     import { buildLink, getCourseId } from "../../utils";
-    import { parseTaskGrp } from "./Course.ts";
     import type { CourseGroup, CourseItem, TaskItem } from "./Course.ts";
+    import { parseTaskGrp } from "./Course.ts";
     import CourseGroupComponent from "./course-group.svelte";
     import TaskModal from "./task-modal.svelte";
 
-    let courseId: string | null = getCourseId();
-    export let courseGroups: CourseGroup[] = [];
-    let taskItem: Promise<TaskItem> | null = null;
-    let showModal = false;
+    const courseId = getCourseId();
+    let { courseGroups = [] }: { courseGroups?: CourseGroup[] } = $props();
+    let taskItem = $state<Promise<TaskItem> | null>(null);
+    let showModal = $state(false);
 
     const onTaskClick = (event: MouseEvent, item: CourseItem) => {
         if (!item.link) return true;

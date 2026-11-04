@@ -3,23 +3,29 @@
     import { isToday } from "./Course.ts";
     import cx from "classnames";
 
-    export let group: CourseGroup;
-    export let onTaskClick: (event: MouseEvent, entry: CourseItem) => boolean;
+    let {
+        group,
+        onTaskClick
+    }: {
+        group: CourseGroup;
+        onTaskClick: (event: MouseEvent, entry: CourseItem) => boolean;
+    } = $props();
 
-    const itemsByType = Object.entries(
-        group.tasks.reduce(
-            (acc, curr) => {
-                if (acc[curr.type] === undefined) {
-                    acc[curr.type] = [];
-                }
-                acc[curr.type].push(curr);
-                return acc;
-            },
-            {} as Record<string, CourseItem[]>
+    const itemsByType = $derived(
+        Object.entries(
+            group.tasks.reduce(
+                (acc, curr) => {
+                    if (acc[curr.type] === undefined) {
+                        acc[curr.type] = [];
+                    }
+                    acc[curr.type].push(curr);
+                    return acc;
+                },
+                {} as Record<string, CourseItem[]>
+            )
         )
     );
-    const sum = (entries: CourseItem[]) =>
-        entries.reduce((acc, curr) => acc + (curr.score ?? 0), 0);
+    const sum = (entries: CourseItem[]) => entries.reduce((acc, curr) => acc + (curr.score ?? 0), 0);
 
     const onEntryClick = (event: MouseEvent, entry: CourseItem) => {
         // TODO: Add modal
@@ -43,27 +49,20 @@
                     class={cx("course_link", `course_link_type_${entry.type}`, {
                         course_disabled: entry.disabled,
                         course_not_started: entry.opens && new Date() > entry.opens && !entry.score,
-                        course_deadline_today:
-                            entry.closes && isToday(entry.closes) && !entry.score,
+                        course_deadline_today: entry.closes && isToday(entry.closes) && !entry.score
                     })}
-                    on:click={(event) => onEntryClick(event, entry)}
+                    onclick={(event) => onEntryClick(event, entry)}
                 >
                     <span class="course_link_name">{entry.name}</span>
                     {#if entry.score !== undefined}
-                        <span class="course_link_score"
-                            >{entry.score === null ? "--" : entry.score.toFixed(2)}</span
-                        >
+                        <span class="course_link_score">{entry.score === null ? "--" : entry.score.toFixed(2)}</span>
                     {/if}
                     {#if entry.opens}
-                        <span class="course_link_deadline"
-                            >Otevírá se: {entry.opens.toLocaleDateString("cs-CZ")}</span
-                        >
+                        <span class="course_link_deadline">Otevírá se: {entry.opens.toLocaleDateString("cs-CZ")}</span>
                         <br />
                     {/if}
                     {#if entry.bonusEnd}
-                        <span class="course_link_deadline"
-                            >🚀 {entry.bonusEnd.toLocaleString("cs-CZ")} /
-                        </span>
+                        <span class="course_link_deadline">🚀 {entry.bonusEnd.toLocaleString("cs-CZ")} / </span>
                     {/if}
                     {#if entry.closes}
                         <span class="course_link_deadline" style="font-weight: 600"
@@ -72,8 +71,7 @@
                     {/if}
                 </a>
             {/each}
-            <span
-                class={cx("course_link course_link_score_sum", `course_link_type_${items[0].type}`)}
+            <span class={cx("course_link course_link_score_sum", `course_link_type_${items[0].type}`)}
                 >{sum(items).toFixed(2)}</span
             >
         {/each}

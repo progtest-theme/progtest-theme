@@ -1,13 +1,13 @@
 <script lang="ts">
     import type { MenuItem } from "./Main.ts";
 
-    export let data: MenuItem;
+    let { data }: { data: MenuItem } = $props();
 </script>
 
 <article>
     <a href={data.link} class="subject">
         <div class="subject-title">{data.title}</div>
-        <div class="icon" style='background-image: url("{data.icon}")'></div>
+        <div class="icon" style:background-image={`url("${data.icon}")`}></div>
         <div class="subject-body">{data.text}</div>
         {#if data.footer}
             <div class="subject-footer">{data.footer}</div>

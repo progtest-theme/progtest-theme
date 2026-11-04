@@ -1,3 +1,5 @@
+import { mount } from "svelte";
+
 import Settings from "./settings.svelte";
 
 // on click, Open Progtest in new tab
@@ -24,4 +26,4 @@ if (typeof chrome === "object") {
 }
 
 // settings page
-new Settings({ target: document.body });
+mount(Settings, { target: document.body });

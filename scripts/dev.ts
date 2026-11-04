@@ -1,4 +1,4 @@
-import Reloader from "advanced-extension-reloader-watch-2/es/reloader";
+import { Reloader } from "advanced-extension-reloader-watch-2/reloader";
 import { watch } from "fs";
 import { cp } from "fs/promises";
 
@@ -67,11 +67,7 @@ build({ verbose: false, clean: true })
                     const pages: { url: string; description: string }[] = [];
                     for await (const filePath of walkDir("./test_pages")) {
                         const file = await Bun.file(filePath).text();
-                        const description = file
-                            .split("\n")[0]
-                            .replace("<!--", "")
-                            .replace("-->", "")
-                            .trim();
+                        const description = file.split("\n")[0].replace("<!--", "").replace("-->", "").trim();
 
                         const splitPath = filePath.split("/");
                         const folderName = splitPath.slice(-2)[0];
@@ -97,11 +93,7 @@ build({ verbose: false, clean: true })
                 }
                 if (url.pathname === "/index.php") {
                     return new Response(
-                        Bun.file(
-                            `./test_pages/${url.searchParams.get(
-                                "X"
-                            )}/${url.searchParams.get("Cou")}.html`
-                        )
+                        Bun.file(`./test_pages/${url.searchParams.get("X")}/${url.searchParams.get("Cou")}.html`)
                     );
                 }
                 if (url.pathname.endsWith("css.css")) {

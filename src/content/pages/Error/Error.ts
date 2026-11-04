@@ -1,3 +1,5 @@
+import { mount } from "svelte";
+
 import ErrorComponent from "./Error.svelte";
 
 export class ErrorPage implements IPage {
@@ -15,7 +17,7 @@ export class ErrorPage implements IPage {
 
         const container = document.createElement("div");
         document.body.insertBefore(container, center);
-        new ErrorComponent({
+        mount(ErrorComponent, {
             target: container,
             props: { error: this.error }
         });

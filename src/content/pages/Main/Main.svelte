@@ -1,23 +1,25 @@
 <script lang="ts">
+    import { untrack } from "svelte";
     import { slide } from "svelte/transition";
     import type { MenuItem, Subjects } from "./Main.ts";
     import cx from "classnames";
     import MenuItemComponent from "./menu-item.svelte";
 
-    export let subjects: Subjects;
-    export let settings: MenuItem[];
+    let { subjects, settings }: { subjects: Subjects; settings: MenuItem[] } = $props();
 
-    let sortedSubjects = Object.entries(subjects).sort((a, b) => {
-        const aSemester = parseInt(a[0].substring(1));
-        const bSemester = parseInt(b[0].substring(1));
-        if (aSemester < bSemester) return 1;
-        if (aSemester > bSemester) return -1;
-        return 0;
-    });
+    let sortedSubjects = $derived(
+        Object.entries(subjects).sort((a, b) => {
+            const aSemester = parseInt(a[0].substring(1));
+            const bSemester = parseInt(b[0].substring(1));
+            if (aSemester < bSemester) return 1;
+            if (aSemester > bSemester) return -1;
+            return 0;
+        })
+    );
 
-    let expanded: Record<string, boolean> = {
-        [sortedSubjects[0][0]]: true
-    };
+    let expanded = $state<Record<string, boolean>>({});
+    const initialSemester = untrack(() => sortedSubjects[0]?.[0]);
+    if (initialSemester) expanded[initialSemester] = true;
 
     const getAcademicYear = (semester: string) => {
         const code = parseInt(semester.substring(1));
@@ -32,18 +34,16 @@
 
     const toggle = (id: string) => {
         expanded[id] = !expanded[id];
-        expanded = { ...expanded };
     };
 </script>
 
 <main>
     {#each sortedSubjects as [semester, subjects]}
-        <!-- svelte-ignore a11y-click-events-have-key-events -->
         <button
             class={cx("subjectHeader", {
                 active: expanded[semester]
             })}
-            on:click={() => toggle(semester)}
+            onclick={() => toggle(semester)}
             >{getSemesterHeader(semester)}
             <b>{getAcademicYear(semester)}</b></button
         >

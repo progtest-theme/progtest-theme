@@ -8,22 +8,19 @@
 
     const version = packageJson.version;
 
-    let settings: ExtensionSettings = DEFAULT_SETTINGS;
-    let showSuccess: boolean = false;
-    let hasPermissions: boolean = false;
+    let settings = $state<ExtensionSettings>({ ...DEFAULT_SETTINGS });
+    let showSuccess = $state(false);
+    let hasPermissions = $state(false);
 
     onMount(async () => {
         if (typeof chrome !== "object") return;
-        chrome.storage.local.get(DEFAULT_SETTINGS, function(localSettings) {
+        chrome.storage.local.get<ExtensionSettings>(DEFAULT_SETTINGS, function (localSettings) {
             if (localSettings === undefined) return;
-            settings = localSettings as ExtensionSettings;
+            settings = localSettings;
             console.log("Settings loaded!", settings);
         });
         hasPermissions = await chrome.permissions.contains({
-            origins: [
-                "https://progtest.fit.cvut.cz/*",
-                "https://courses.fit.cvut.cz/data/courses-all.json"
-            ]
+            origins: ["https://progtest.fit.cvut.cz/*", "https://courses.fit.cvut.cz/data/courses-all.json"]
         });
         console.log("Permission check", hasPermissions);
 
@@ -31,20 +28,21 @@
         document.getElementById("permissionBtn")?.addEventListener("click", grantPermissions);
     });
 
-    function handleSubmit() {
+    function handleSubmit(event: SubmitEvent) {
+        event.preventDefault();
         const onSetSettings = () => {
             console.log("Settings saved!", settings);
             showSuccess = true;
             if (typeof chrome === "object") {
                 chrome.tabs.reload({ bypassCache: true });
             }
-            setTimeout(function() {
+            setTimeout(function () {
                 showSuccess = false;
             }, 1500);
         };
 
         if (typeof chrome === "object") {
-            chrome.storage.local.set(settings, onSetSettings);
+            chrome.storage.local.set($state.snapshot(settings), onSetSettings);
         } else {
             onSetSettings();
         }
@@ -54,10 +52,7 @@
         if (typeof chrome === "object") {
             chrome.permissions
                 .request({
-                    origins: [
-                        "https://progtest.fit.cvut.cz/*",
-                        "https://courses.fit.cvut.cz/data/courses-all.json"
-                    ]
+                    origins: ["https://progtest.fit.cvut.cz/*", "https://courses.fit.cvut.cz/data/courses-all.json"]
                 })
                 .then((granted) => {
                     if (granted) {
@@ -98,7 +93,7 @@
             <p style="line-height: 20px;">Themes</p>
         </div>
 
-        <form on:submit|preventDefault={handleSubmit} style="flex-grow: 1;">
+        <form onsubmit={handleSubmit} style="flex-grow: 1;">
             <div
                 style="
             display: flex; 
@@ -113,8 +108,7 @@
                 align-items: center;
             "
                 >
-                    <iconify-icon icon="tabler:palette" style="width: 16px; display: block;"
-                    ></iconify-icon>
+                    <iconify-icon icon="tabler:palette" style="width: 16px; display: block;"></iconify-icon>
                     <p style="font-weight: 500;">Select your theme</p>
                 </div>
                 <select bind:value={settings.theme} style="padding: 2px 4px; border-radius: 4px;">
@@ -129,13 +123,14 @@
                 align-items: center;
             "
                 >
-                    <iconify-icon icon="tabler:palette" style="width: 16px; display: block;"
-                    ></iconify-icon>
+                    <iconify-icon icon="tabler:palette" style="width: 16px; display: block;"></iconify-icon>
                     <p style="font-weight: 500;">Select theme mode</p>
                 </div>
                 <select bind:value={settings.themeMode} style="padding: 2px 4px; border-radius: 4px;">
                     {#each Object.keys(ThemeMode) as themeMode (themeMode)}
-                        <option value={themeMode}>{themeMode.charAt(0).toUpperCase() + themeMode.slice(1).toLowerCase()}</option>
+                        <option value={themeMode}
+                            >{themeMode.charAt(0).toUpperCase() + themeMode.slice(1).toLowerCase()}</option
+                        >
                     {/each}
                 </select>
             </div>
@@ -157,8 +152,7 @@
                     align-items: center;
                 "
                 >
-                    <iconify-icon icon="tabler:settings" style="width: 16px; display: block;"
-                    ></iconify-icon>
+                    <iconify-icon icon="tabler:settings" style="width: 16px; display: block;"></iconify-icon>
                     <p style="font-weight: 500;">Theme settings</p>
                 </div>
                 <div
@@ -195,7 +189,7 @@
         "
             >
                 <Button type="submit" style="width: 100%;">
-                    <iconify-icon icon="tabler:device-floppy" />
+                    <iconify-icon icon="tabler:device-floppy"></iconify-icon>
                     <p>Save</p>
                 </Button>
             </div>
@@ -267,10 +261,7 @@
                 <p style="line-height: 20px;">Themes</p>
             </div>
             <p>This extension allows you to change the look of Progtest.</p>
-            <p>
-                For the extension to work properly, please grant it permissions to access the
-                following sites:
-            </p>
+            <p>For the extension to work properly, please grant it permissions to access the following sites:</p>
             <ul style="flex-grow: 1;">
                 <li>
                     <code>progtest.fit.cvut.cz</code>,<br />
@@ -283,7 +274,7 @@
             </ul>
 
             <Button id="permissionBtn" style="width: 100%;">
-                <iconify-icon icon="tabler:shield" />
+                <iconify-icon icon="tabler:shield"></iconify-icon>
                 <p>Grant permissions</p>
             </Button>
         </div>

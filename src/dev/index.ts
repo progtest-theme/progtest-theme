@@ -1,4 +1,6 @@
+import { mount } from "svelte";
+
 import Dev from "./dev.svelte";
 
 // settings page
-new Dev({ target: document.body });
+mount(Dev, { target: document.body });

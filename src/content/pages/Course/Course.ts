@@ -1,3 +1,5 @@
+import { mount } from "svelte";
+
 import type { ExtensionSettings } from "../../../settings";
 import { buildLink, getCourseId } from "../../utils";
 import { Logged } from "../Logged";
@@ -38,7 +40,7 @@ export class Course extends Logged {
 
         const container = document.createElement("div");
         document.body.appendChild(container);
-        new CourseComponent({
+        mount(CourseComponent, {
             target: container,
             props: { courseGroups: tasks }
         });

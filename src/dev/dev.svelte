@@ -1,5 +1,5 @@
 <script lang="ts">
-    let data = fetch("/test_pages").then((res) => res.json());
+    const data: Promise<{ url: string; description: string }[]> = fetch("/test_pages").then((res) => res.json());
 </script>
 
 <main style="max-width: 500px; margin: 0 auto; padding: 16px;">

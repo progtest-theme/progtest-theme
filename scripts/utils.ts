@@ -1,4 +1,4 @@
-import archiver from "archiver";
+import { ZipArchive } from "archiver";
 import { createWriteStream } from "fs";
 import { cp, exists, mkdir, readdir, rm, stat } from "fs/promises";
 
@@ -68,7 +68,7 @@ export async function zipDirectory(
         console.error(error);
     } else {
         console.log(`Zipping ${sourceDir} to ${outPath}`);
-        const archive = archiver("zip", { zlib: { level: 9 } });
+        const archive = new ZipArchive({ zlib: { level: 9 } });
 
         const stream = createWriteStream(outPath);
         stream.on("error", (err) => {

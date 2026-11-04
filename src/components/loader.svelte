@@ -3,7 +3,7 @@
     import { fade } from "svelte/transition";
     import { pttLoadedEvent } from "../events";
 
-    let isVisible = false;
+    let isVisible = $state(false);
 
     function showLoader() {
         document.getElementsByTagName("body")[0].classList.remove("ptt-loaded");

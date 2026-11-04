@@ -1,7 +1,8 @@
 <script lang="ts">
-    export let error: Error;
+    let { error }: { error: Error } = $props();
 
-    const goBack = () => {
+    const goBack = (event: MouseEvent) => {
+        event.preventDefault();
         history.back();
         return false;
     };
@@ -17,11 +18,8 @@
         {/each}
     {/if}
     <p>
-        Try <a href={document.referrer} on:click={goBack}>going back</a>, if
-        that doesn't help,
-        <a href="https://github.com/progtest-theme/progtest-theme/issues"
-            >file an issue on GitHub</a
-        >.
+        Try <a href={document.referrer} onclick={goBack}>going back</a>, if that doesn't help,
+        <a href="https://github.com/progtest-theme/progtest-theme/issues">file an issue on GitHub</a>.
     </p>
 </main>
 

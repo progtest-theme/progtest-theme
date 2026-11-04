@@ -1,3 +1,5 @@
+import { mount } from "svelte";
+
 import type { ExtensionSettings } from "../../../settings";
 import { Logged } from "../Logged";
 
@@ -107,7 +109,7 @@ export class Main extends Logged {
 
         const container = document.createElement("div");
         document.querySelector("div.navLink.navbar")?.insertAdjacentElement("afterend", container);
-        new MainComponent({
+        mount(MainComponent, {
             target: container,
             props: { subjects, settings }
         });
@@ -137,15 +139,12 @@ function parseItems(): ParsedItem[] {
 }
 
 function getMenuIcon(title: string) {
-    const iconName = (
+    const iconName =
         {
             Nastavení: "settings",
             Překladače: "compile",
             FAQ: "faq"
-        }[title] || title.toLowerCase()
-            .replace("bi-", "")
-            .replace("ni-", "")
-    );
+        }[title] || title.toLowerCase().replace("bi-", "").replace("ni-", "");
 
     return chrome.runtime.getURL("themes/assets/icons/" + iconName + ".svg");
 }

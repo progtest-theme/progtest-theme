@@ -1,21 +1,17 @@
-import { BunPlugin } from "bun";
+import type { BunPlugin } from "bun";
 import { readFile } from "fs/promises";
-import svelte from "svelte-preprocess";
-import { compile, preprocess } from "svelte/compiler";
+import { compile } from "svelte/compiler";
 
 export const sveltePlugin: BunPlugin = {
     name: "svelte loader",
     async setup(builder) {
         builder.onLoad({ filter: /\.svelte$/ }, async ({ path }) => {
-            const preprocessed = await preprocess(await readFile(path, "utf8"), svelte(), {
-                filename: path
-            });
-
             return {
-                // Use the preprocessor of your choice.
-                contents: compile(preprocessed.code, {
+                contents: compile(await readFile(path, "utf8"), {
                     filename: path,
-                    generate: "dom",
+                    generate: "client",
+                    css: "injected",
+                    runes: true,
                     dev: Bun.main.endsWith("dev.ts")
                 }).js.code,
                 loader: "js"
