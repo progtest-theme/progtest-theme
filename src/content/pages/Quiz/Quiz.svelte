@@ -25,12 +25,14 @@
     <ol>
         {#each questions as question}
             <li>
-                <a href={question.link}>
+                <svelte:element this={question.link ? "a" : "div"} class="question" href={question.link}>
                     <span class="name">{question.name}</span>
                     <span class="status">{question.status}</span>
                     <span class="score">{question.score}</span>
-                    <span class="open">{question.openLabel} ›</span>
-                </a>
+                    {#if question.link}
+                        <span class="open">{question.openLabel} ›</span>
+                    {/if}
+                </svelte:element>
             </li>
         {/each}
     </ol>
@@ -66,7 +68,7 @@
         border-top: 1px solid var(--quiz-border);
     }
 
-    li a {
+    .question {
         display: grid;
         grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) 70px 100px;
         align-items: center;
@@ -75,11 +77,11 @@
         color: var(--quiz-text);
     }
 
-    :global(body.dark) li a {
+    :global(body.dark) .question {
         color: var(--quiz-text);
     }
 
-    li a:hover {
+    a.question:hover {
         background: rgb(128 128 128 / 0.1);
     }
 
@@ -131,7 +133,7 @@
     }
 
     @media (width <= 600px) {
-        li a {
+        .question {
             grid-template-columns: minmax(0, 1fr) auto;
         }
 

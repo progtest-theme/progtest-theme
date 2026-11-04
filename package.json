@@ -1,6 +1,6 @@
 {
     "name": "progtest-theme",
-    "version": "1.4.0",
+    "version": "1.4.1",
     "description": "Theme manager for ProgTest",
     "main": "src/background.js",
     "scripts": {
@@ -12,15 +12,10 @@
         "lint:fix": "prettier --write . && stylelint \"src/**/*.css\" --fix && eslint . --fix",
         "version": "bun run scripts/version.ts"
     },
-    "repository": {
-        "type": "git",
-        "url": "git+https://github.com/progtest-theme/progtest-theme.git"
-    },
+    "repository": { "type": "git", "url": "git+https://github.com/progtest-theme/progtest-theme.git" },
     "author": "keombre",
     "license": "MIT",
-    "bugs": {
-        "url": "https://github.com/progtest-theme/progtest-theme/issues"
-    },
+    "bugs": { "url": "https://github.com/progtest-theme/progtest-theme/issues" },
     "homepage": "https://github.com/progtest-theme/progtest-theme",
     "devDependencies": {
         "@eslint/js": "^10.0.1",
