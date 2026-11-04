@@ -53,39 +53,26 @@ export class Task extends Logged {
     }
 
     replaceCountdown() {
-        if (!document.getElementById("countdown")) {
-            return;
-        }
-        // block setTimeout calls
-        const elt = document.createElement("script");
-        elt.innerHTML = "window.setCountdown();window.setCountdown = function () {};";
-        document.head.appendChild(elt);
-
-        // rename element
-        document.getElementById("countdown")?.setAttribute("id", "ptt-countdown");
-
-        // create hidden mocked element
-        const hide = document.createElement("div");
-        hide.setAttribute("id", "countdown");
-        hide.style.display = "none";
-        document.head.appendChild(hide);
-
-        const elm = document.getElementById("ptt-countdown");
+        const elm = document.getElementById("countdown");
         if (!elm) return;
-        if (elm.innerHTML == "&nbsp;") {
-            return;
-        }
+        // The native timer stops on its next tick when its target no longer exists.
+        elm.id = "ptt-countdown";
+        const seconds = Number.parseFloat(elm.textContent ?? "");
+        if (!Number.isFinite(seconds)) return;
         elm.style.minWidth = "300px";
-        const deadline = parseInt(elm.innerHTML.slice(0, -4)) * 1000 + new Date().getTime();
+        const deadline = Date.now() + seconds * 1000;
 
         const loop = () => {
-            const remaining = (deadline - new Date().getTime()) / 1000;
+            const remaining = (deadline - Date.now()) / 1000;
             const display = formatCountdown(remaining);
             elm.innerHTML = `${display.prefix} <b>${display.time}</b>`;
         };
 
         loop();
-        setInterval(loop, 900);
+        const timer = setInterval(() => {
+            loop();
+            if (Date.now() >= deadline || !elm.isConnected) clearInterval(timer);
+        }, 900);
     }
 
     static markResultsTable() {

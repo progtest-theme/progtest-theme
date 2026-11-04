@@ -8,9 +8,18 @@ body:not(.ptt-loaded)::before {
     height: 100vh;
     background: #1c1e1f;
     z-index: 100;
+    animation: ptt-loading-fallback 0s 12s forwards;
 }
 
-body.ptt-loaded::before {
+body.ptt-loaded::before,
+html[data-ptt-loaded] body::before {
     display: none !important;
     position: relative !important;
+}
+
+@keyframes ptt-loading-fallback {
+    to {
+        visibility: hidden;
+        pointer-events: none;
+    }
 }

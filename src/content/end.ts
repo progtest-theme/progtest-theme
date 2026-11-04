@@ -1,4 +1,4 @@
-import { pttLoadedEvent } from "../events";
+import { finishLoading } from "../events";
 import { DEFAULT_SETTINGS, type ExtensionSettings, ThemeMode } from "../settings.ts";
 
 import Pages, { ErrorPage, Logged, LoginPage, Main } from "./pages";
@@ -52,9 +52,7 @@ const main = async (settings: ExtensionSettings) => {
 };
 
 const replaceStyles = (settings: ExtensionSettings) => {
-    document.head.querySelectorAll('link[href$="/css.css"]').forEach((e) => {
-        e.remove();
-    });
+    const nativeStyles = [...document.head.querySelectorAll('link[href$="/css.css"]')];
 
     console.log("Applying theme:", settings.theme, "mode:", settings.themeMode);
     const body = document.getElementsByTagName("body")[0];
@@ -71,9 +69,25 @@ const replaceStyles = (settings: ExtensionSettings) => {
     link.setAttribute("type", "text/css");
 
     link.setAttribute("href", chrome.runtime.getURL(`themes/${settings.theme.toLowerCase()}/styles.css`));
-    document.getElementsByTagName("head")[0].appendChild(link);
-    return new Promise((resolve) => {
-        link.onload = resolve;
+    return new Promise<void>((resolve, reject) => {
+        const timeout = setTimeout(() => fail(), 8_000);
+        const cleanup = () => {
+            clearTimeout(timeout);
+            link.onload = null;
+            link.onerror = null;
+        };
+        const fail = () => {
+            cleanup();
+            link.remove();
+            reject(new Error("Theme stylesheet could not be loaded"));
+        };
+        link.onload = () => {
+            cleanup();
+            nativeStyles.forEach((style) => style.remove());
+            resolve();
+        };
+        link.onerror = fail;
+        document.head.appendChild(link);
     });
 };
 
@@ -85,7 +99,7 @@ async function initialise() {
     } catch (error) {
         console.error("Failed to initialise ProgTest Themes", error);
     } finally {
-        document.dispatchEvent(pttLoadedEvent);
+        finishLoading();
     }
 }
 

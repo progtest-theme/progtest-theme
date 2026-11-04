@@ -1,7 +1,6 @@
 import { mount } from "svelte";
 
 import type { ExtensionSettings } from "../../../settings";
-import { buildLink, getCourseId } from "../../utils";
 import { Logged } from "../Logged";
 
 import CourseComponent from "./Course.svelte";
@@ -32,7 +31,7 @@ export class Course extends Logged {
     async initialise() {
         await super.initialise();
 
-        const tasks = await GetTasks();
+        const tasks = GetTasks();
         if (!tasks) return;
 
         const container = document.createElement("div");
@@ -47,14 +46,8 @@ export class Course extends Logged {
     }
 }
 
-export async function GetTasks() {
-    const page = await fetch(buildLink("X=Course&Cou=" + getCourseId()))
-        .then((res) => res.text())
-        .catch((e) => {
-            console.error("Failed to fetch course overview", e);
-        });
-    if (!page) return;
-    const tree = new DOMParser().parseFromString(page, "text/html");
+export function GetTasks(tree: Document = document) {
+    if (!tree.querySelector("details.menuList2")) return;
     const ret: CourseGroup[] = [];
 
     tree.querySelectorAll("details.menuList2").forEach((e) => {
@@ -233,7 +226,7 @@ function parseItemInfo(document: Document): TaskItemInfo {
                 lateDeadline = textToDate(value.querySelector("b")?.textContent ?? "");
                 lateDeadlineInfo = value.textContent?.replace(value.querySelector("b")?.textContent ?? "", "").trim();
                 break;
-            case "Hodnocení:":
+            case "Hodnocení:": {
                 const floats = value?.textContent?.match(/\d+\.\d+/g);
 
                 scoreInfo = value.textContent?.replace(value.querySelector("b")?.textContent ?? "", "").trim();
@@ -242,6 +235,7 @@ function parseItemInfo(document: Document): TaskItemInfo {
                     scoreMax = parseFloat(floats[1]);
                 }
                 break;
+            }
         }
     });
 

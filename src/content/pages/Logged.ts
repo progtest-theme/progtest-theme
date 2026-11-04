@@ -35,7 +35,8 @@ export class Logged implements IPage {
         this.header.className += " navbar";
         this.header.style.zIndex = "2";
         // add scroll to top button
-        document.body.innerHTML += this.topButton;
+        if (!document.getElementById("upTop")) document.body.insertAdjacentHTML("beforeend", this.topButton);
+        this.tButton = document.getElementById("upTop") as HTMLElement;
         if (this.tButton) {
             this.tButton.addEventListener("click", () => {
                 this.tButton.removeAttribute("style");
@@ -55,7 +56,7 @@ export class Logged implements IPage {
 
         this.displayBell();
         this.highlightCode();
-        this.notifications();
+        void this.notifications().catch((error) => console.debug("Task notifications unavailable", error));
     }
 
     displayBell() {
@@ -130,11 +131,6 @@ export class Logged implements IPage {
             return;
         }
 
-        const tasks = await Logged.taskSpider().catch((error) => {
-            console.error("Failed to check for new tasks", error);
-            return [];
-        });
-
         let localTasks: LoggedTask[];
         try {
             localTasks = JSON.parse(localStorage.tasks || "[]");
@@ -142,22 +138,49 @@ export class Logged implements IPage {
             localTasks = [];
         }
 
-        if (!Array.isArray(localTasks) || !localTasks.length) {
-            localStorage.tasks = JSON.stringify(tasks.map((task) => ({ ...task, seen: true })));
-        } else {
-            const notify = tasks.filter((task) => !localTasks.some((stored) => stored.link === task.link));
-            this.displayNotifications(notify.concat(localTasks.filter((task) => !task.seen)));
-            localStorage.tasks = JSON.stringify(localTasks.concat(notify));
+        if (!Array.isArray(localTasks)) localTasks = [];
+        this.displayNotifications(localTasks.filter((task) => !task.seen));
+
+        const username = document.title.split(/[@|]/)[0].trim();
+        const refreshKey = `ptt-task-check:${username}`;
+        if (Date.now() < Number(sessionStorage.getItem(refreshKey))) return;
+        // Back off after failures or navigation; successful scans are reused for five minutes.
+        sessionStorage.setItem(refreshKey, String(Date.now() + 60_000));
+        const controller = new AbortController();
+        const cancel = () => controller.abort();
+        window.addEventListener("pagehide", cancel, { once: true });
+        try {
+            const tasks = await Logged.taskSpider(controller.signal);
+            if (!localTasks.length) {
+                localTasks = tasks.map((task) => ({ ...task, seen: true }));
+            } else {
+                const notify = tasks.filter((task) => !localTasks.some((stored) => stored.link === task.link));
+                localTasks = localTasks.concat(notify);
+            }
+            localStorage.tasks = JSON.stringify(localTasks);
+            sessionStorage.setItem(refreshKey, String(Date.now() + 5 * 60_000));
+            this.displayNotifications(localTasks.filter((task) => !task.seen));
+        } catch (error) {
+            if (!controller.signal.aborted)
+                console.debug("Task notification refresh unavailable; keeping cached tasks", error);
+        } finally {
+            window.removeEventListener("pagehide", cancel);
         }
     }
 
     displayNotifications(elems: LoggedTask[]) {
+        const bell = document.querySelector(".notify");
+        const frame = document.querySelector(".notifications");
+        if (!bell || !frame) return;
+        bell.classList.toggle("on", elems.length > 0);
+        bell.classList.toggle("off", !elems.length);
+        frame.replaceChildren();
         if (!elems.length) {
+            const empty = document.createElement("b");
+            empty.textContent = "Žádná upozornění";
+            frame.append(empty);
             return;
         }
-        document.getElementsByClassName("notify")[0].classList.replace("off", "on");
-        const frame = document.getElementsByClassName("notifications")[0];
-        frame.innerHTML = "";
         elems.forEach((e) => {
             const node = document.createElement("a");
             node.href = e.link;
@@ -184,10 +207,10 @@ export class Logged implements IPage {
         return links;
     }
 
-    static async taskSpider(): Promise<LoggedTask[]> {
-        const main = await fetch(new URL("index.php?X=Main", window.location.origin));
+    static async taskSpider(signal?: AbortSignal): Promise<LoggedTask[]> {
+        const main = await fetch(new URL("index.php?X=Main", window.location.origin), { signal });
         if (!main.ok || main.redirected) {
-            return [];
+            throw new Error("Task overview is unavailable");
         }
 
         const mainText = await main.text();
@@ -195,9 +218,9 @@ export class Logged implements IPage {
         const tasks: LoggedTask[] = [];
 
         for (const e of subjects) {
-            const course = await fetch(e.href);
+            const course = await fetch(e.href, { signal });
             if (!course.ok || course.redirected) {
-                continue;
+                throw new Error("Course overview is unavailable");
             }
             const text = await course.text();
             const taskLinks = Logged.getLinksFromHTML(text, "TaskGrp");

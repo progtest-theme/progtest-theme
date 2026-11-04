@@ -3,31 +3,31 @@
     import { fade } from "svelte/transition";
     import { pttLoadedEvent } from "../events";
 
-    let isVisible = $state(false);
-
-    function showLoader() {
-        document.getElementsByTagName("body")[0].classList.remove("ptt-loaded");
-        isVisible = true;
-    }
+    let isVisible = $state(!document.documentElement.hasAttribute("data-ptt-loaded"));
 
     function hideLoader() {
-        document.getElementsByTagName("body")[0].classList.add("ptt-loaded");
+        document.body?.classList.add("ptt-loaded");
         isVisible = false;
     }
 
     onMount(() => {
-        window.addEventListener("beforeunload", showLoader);
+        const restorePage = (event: PageTransitionEvent) => {
+            if (event.persisted) hideLoader();
+        };
+        window.addEventListener("pageshow", restorePage);
         document.addEventListener(pttLoadedEvent.type, hideLoader);
+        // Completion can precede loading this external script.
+        if (document.documentElement.hasAttribute("data-ptt-loaded")) hideLoader();
 
         return () => {
-            window.removeEventListener("beforeunload", showLoader);
+            window.removeEventListener("pageshow", restorePage);
             document.removeEventListener(pttLoadedEvent.type, hideLoader);
         };
     });
 </script>
 
 {#if isVisible}
-    <div class="loader" transition:fade={{ duration: 150 }}>
+    <div class="loader" role="status" aria-label="Načítání stránky" transition:fade={{ duration: 150 }}>
         <div class="anim-load anim-1"></div>
         <div class="anim-load anim-2"></div>
         <div class="anim-load anim-3"></div>

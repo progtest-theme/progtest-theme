@@ -57,11 +57,17 @@ export class Main extends Logged {
         }
 
         // get subject URLs from courses
-        const subjectInfo: CoursesInfo = await fetch("https://courses.fit.cvut.cz/data/courses-all.json", {
+        const subjectInfo: CoursesInfo | undefined = await fetch("https://courses.fit.cvut.cz/data/courses-all.json", {
             method: "GET",
             mode: "cors",
-            credentials: "omit"
-        }).then((response) => response.json());
+            credentials: "omit",
+            signal: AbortSignal.timeout(2_500)
+        })
+            .then((response) => {
+                if (!response.ok) throw new Error("Course metadata is unavailable");
+                return response.json();
+            })
+            .catch(() => undefined);
 
         const subjects: Subjects = {};
         const settings: MenuItem[] = [];
@@ -93,7 +99,7 @@ export class Main extends Logged {
                 2
             )}${item.semester.includes("Zimní") ? 1 : 2}`;
             const subjectHomepage =
-                subjectInfo.courses[item.title]?.homepage ?? `https://courses.fit.cvut.cz/${item.title}`;
+                subjectInfo?.courses[item.title]?.homepage ?? `https://courses.fit.cvut.cz/${item.title}`;
 
             subjects[semesterKey] ??= [];
             subjects[semesterKey].push({
