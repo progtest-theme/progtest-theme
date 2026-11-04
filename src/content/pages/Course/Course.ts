@@ -32,11 +32,8 @@ export class Course extends Logged {
     async initialise() {
         await super.initialise();
 
-        document.querySelectorAll<HTMLElement>("body > details").forEach((e) => {
-            e.style.display = "none";
-        });
-
         const tasks = await GetTasks();
+        if (!tasks) return;
 
         const container = document.createElement("div");
         document.body.appendChild(container);
@@ -44,6 +41,9 @@ export class Course extends Logged {
             target: container,
             props: { courseGroups: tasks }
         });
+
+        document.querySelectorAll("body > details.menuList2").forEach((group) => group.remove());
+        document.querySelector(".toolItem2")?.parentElement?.remove();
     }
 }
 
@@ -57,7 +57,7 @@ export async function GetTasks() {
     const tree = new DOMParser().parseFromString(page, "text/html");
     const ret: CourseGroup[] = [];
 
-    tree.querySelectorAll("details.menuList").forEach((e) => {
+    tree.querySelectorAll("details.menuList2").forEach((e) => {
         const groupName = e.querySelector<HTMLElement>("summary > b")?.textContent;
         const tasks: CourseItem[] = [];
 
@@ -65,35 +65,28 @@ export async function GetTasks() {
             throw new Error("Missing required group name: " + JSON.stringify(groupName));
         }
 
-        if (groupName === "Výsledky") {
-            return;
-        }
-
-        e.querySelectorAll(":scope > div > div").forEach((f) => {
-            const name = f.querySelector<HTMLElement>("[class*='bigBut'] span")?.textContent;
+        e.querySelectorAll(".menuItem3").forEach((f) => {
+            const name = f.querySelector("img")?.nextElementSibling?.textContent?.trim();
 
             let type = {
                 program: "task",
                 quiz: "test",
                 extra: "extra"
-            }[
-                f.querySelector<HTMLImageElement>("[class*='bigBut'] img")?.src.split("/").pop()?.split(".").shift() ??
-                    ""
-            ];
+            }[f.querySelector<HTMLImageElement>("img")?.src.split("/").pop()?.split(".").shift() ?? ""];
 
             if (type == "test" && name?.toLowerCase().includes("demo")) {
                 type = "test-demo";
             }
 
-            const link: string | undefined = f.querySelector<HTMLAnchorElement>(":scope > div a")?.href;
+            const link: string | undefined = f.querySelector<HTMLAnchorElement>(":scope > a")?.href;
             const disabled: boolean = link === undefined;
             let score: number | undefined | null;
             let opens: Date | undefined;
             let closes: Date | undefined;
             let bonusEnd: Date | undefined;
 
-            f.querySelectorAll(":scope > div > span").forEach((span) => {
-                const text = span.textContent?.trim() ?? "";
+            f.querySelectorAll(":scope > :is(a, div) > div").forEach((row) => {
+                const text = row.textContent?.trim() ?? "";
 
                 if (text.startsWith("Hodnocení:")) {
                     score = parseFloat(text.substring(text.indexOf(":") + 1).trim());

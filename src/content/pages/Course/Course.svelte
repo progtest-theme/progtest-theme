@@ -40,6 +40,12 @@
         <a href={buildLink(`X=Results&Cou=${courseId}`).toString()} class="course_link">
             <span class="course_link_name">Výsledky</span>
         </a>
+        <a href={buildLink("X=CompilersDryRuns").toString()} class="course_link">
+            <span class="course_link_name">Překladače</span>
+        </a>
+        <a href={buildLink("X=Preset").toString()} class="course_link">
+            <span class="course_link_name">Nastavení</span>
+        </a>
     </div>
     {#each courseGroups as group}
         <CourseGroupComponent {group} {onTaskClick} />
@@ -71,7 +77,8 @@
 
     @media only screen and (max-width: 750px) {
         .course_container {
-            grid-template-columns: repeat(1, 330px);
+            grid-template-columns: minmax(0, 330px);
+            padding: 0 12px;
         }
     }
 
@@ -97,6 +104,8 @@
     }
 
     .course_results_grp {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
         order: 1;
         grid-row: 1;
         grid-column-end: -1;
@@ -105,11 +114,32 @@
     }
 
     .course_results_grp .course_link_name {
+        max-width: none;
         text-align: center;
     }
 
-    .course_results_grp .course_link_name::before {
+    .course_results_grp .course_link {
+        padding: 6px 12px;
+        border-left: none;
+    }
+
+    .course_results_grp a + a {
+        border-left: 1px solid rgb(128, 128, 128, 0.25);
+    }
+
+    .course_results_grp a[href*="X=Results"] .course_link_name::before {
         content: "🏆";
         margin-right: 7px;
+    }
+
+    @media only screen and (max-width: 750px) {
+        .course_results_grp {
+            grid-template-columns: 1fr;
+        }
+
+        .course_results_grp a + a {
+            border-left: none;
+            border-top: 1px solid rgb(128, 128, 128, 0.25);
+        }
     }
 </style>
