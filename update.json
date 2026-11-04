@@ -77,6 +77,10 @@
                 {
                     "version": "1.4.1",
                     "update_link": "https://github.com/progtest-theme/progtest-theme/releases/download/1.4.1/progtest_themes-1.4.1-firefox.xpi"
+                },
+                {
+                    "version": "1.4.2",
+                    "update_link": "https://github.com/progtest-theme/progtest-theme/releases/download/1.4.2/progtest_themes-1.4.2-firefox.xpi"
                 }
             ]
         }

@@ -1,6 +1,6 @@
 {
     "name": "ProgTest Themes",
-    "version": "1.4.1",
+    "version": "1.4.2",
     "description": "Theme manager for ProgTest",
     "manifest_version": 3,
     "content_scripts": [
