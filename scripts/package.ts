@@ -1,4 +1,4 @@
-import { cp, mkdir, rm } from "fs/promises";
+import { cp, mkdir, readdir, rename, rm } from "fs/promises";
 import minimist from "minimist";
 import webExt from "web-ext";
 
@@ -21,6 +21,7 @@ async function signFirefox() {
     if (!process.env.WEB_EXT_API_KEY || !process.env.WEB_EXT_API_SECRET) {
         throw new Error("WEB_EXT_API_KEY and WEB_EXT_API_SECRET must be set in the environment");
     }
+    const { version } = await Bun.file(FIREFOX_MANIFEST).json();
 
     await cp(FIREFOX_MANIFEST, MANIFEST_TARGET);
     await rm(FIREFOX_DIST_DIR, { recursive: true, force: true });
@@ -37,6 +38,15 @@ async function signFirefox() {
         },
         { shouldExitProgram: false }
     );
+
+    const signedFiles = (await readdir(FIREFOX_DIST_DIR)).filter((file) => file.endsWith(".xpi"));
+    if (signedFiles.length !== 1) {
+        throw new Error(`Expected one signed Firefox XPI, found ${signedFiles.length}`);
+    }
+    const filename = `progtest_themes-${version}-firefox.xpi`;
+    const destination = `${FIREFOX_DIST_DIR}/${filename}`;
+    if (signedFiles[0] !== filename) await rename(`${FIREFOX_DIST_DIR}/${signedFiles[0]}`, destination);
+    console.log(`Firefox extension saved to ${destination}`);
 }
 
 async function packChrome(useSystemUtilities: boolean) {
