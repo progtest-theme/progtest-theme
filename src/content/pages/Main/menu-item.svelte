@@ -7,7 +7,14 @@
 <article>
     <a href={data.link} class="subject">
         <div class="subject-title">{data.title}</div>
-        <div class="icon" style:background-image={`url("${data.icon}")`}></div>
+        <img
+            class="icon"
+            src={data.icon}
+            alt=""
+            onerror={(event) => {
+                event.currentTarget.src = chrome.runtime.getURL("themes/assets/icons/unknown.svg");
+            }}
+        />
         <div class="subject-body">{data.text}</div>
         {#if data.footer}
             <div class="subject-footer">{data.footer}</div>
@@ -74,8 +81,7 @@
     .icon {
         width: 70px;
         height: 70px;
-        background-size: cover;
-        background-repeat: no-repeat;
+        object-fit: contain;
         position: absolute;
         right: 14px;
         top: 14px;

@@ -64,8 +64,9 @@
 
 <style>
     main {
+        box-sizing: border-box;
         margin: 0 auto;
-        padding: 10px 50px;
+        padding: 10px clamp(16px, 5vw, 50px);
         display: flex;
         flex-direction: column;
         gap: 10px;
@@ -113,7 +114,7 @@
     .subjectHeader {
         display: block;
         width: 100%;
-        height: 35px;
+        min-height: 35px;
         background: linear-gradient(to right, #343a40 20%, rgba(0, 0, 0, 0) 99%);
         line-height: 35px;
         padding: 0 0 0 34px;

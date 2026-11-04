@@ -43,7 +43,6 @@ type CoursesInfo = {
 export class Main extends Logged {
     className = "main";
 
-    orderC = 1000;
     constructor(settings: ExtensionSettings) {
         super(settings);
     }
@@ -113,26 +112,36 @@ export class Main extends Logged {
             target: container,
             props: { subjects, settings }
         });
+
+        document.querySelectorAll("details.menuList2").forEach((semester) => semester.remove());
+        document.querySelector(".toolItem2")?.parentElement?.remove();
     }
 }
 
 function parseItems(): ParsedItem[] {
     const items: ParsedItem[] = [];
 
-    document.querySelectorAll("details.menuList").forEach((semester) => {
-        semester.querySelectorAll("div.bigButLink").forEach((subject) => {
-            const link = subject.querySelector("a");
-            const name = subject.querySelector("span");
-            const title = subject.nextElementSibling?.querySelector("span");
+    document.querySelectorAll("details.menuList2").forEach((semester) => {
+        semester.querySelectorAll<HTMLAnchorElement>(".menuItem2 a").forEach((subject) => {
+            const name = subject.querySelector("b")?.textContent ?? "";
+            const text = subject.querySelector("center")?.textContent?.replace(name, "").trim() ?? "";
 
             items.push({
-                title: name?.textContent ?? "",
-                text: title?.textContent ?? "",
-                link: link?.href ?? "",
+                title: name,
+                text: text.replace(/^\(|\)$/g, ""),
+                link: subject.href,
                 semester: semester.querySelector("summary")?.innerText ?? ""
             });
         });
-        semester.remove();
+    });
+
+    document.querySelectorAll<HTMLAnchorElement>(".toolItem2 a").forEach((tool) => {
+        items.push({
+            title: tool.querySelector("b")?.textContent ?? "",
+            text: "",
+            link: tool.href,
+            semester: "Nástroje"
+        });
     });
 
     return items;
