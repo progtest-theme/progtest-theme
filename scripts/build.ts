@@ -1,6 +1,6 @@
 import { cp, mkdir, rm } from "fs/promises";
 
-import { BUILD_DIR, ENTRYPOINTS, SRC_DIR } from "./constants";
+import { BUILD_DIR, CHROME_MANIFEST, ENTRYPOINTS, SRC_DIR } from "./constants";
 import { sveltePlugin } from "./sveltePlugin";
 import { copyDirectory } from "./utils";
 
@@ -43,4 +43,6 @@ export async function build(options: { verbose: boolean; clean: boolean }) {
     ]) {
         await cp(path, `${BUILD_DIR}/external/${path.split("/").pop()}`);
     }
+
+    await cp(CHROME_MANIFEST, `${BUILD_DIR}/manifest.json`);
 }

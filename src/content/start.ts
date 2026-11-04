@@ -1,6 +1,3 @@
-import { MessageType } from "../messages";
-import type { ExtensionSettings } from "../settings";
-
 const setTitle = () => {
     document.title = document.title.replace("@progtest.fit.cvut.cz -", " |").replace("progtest.fit.cvut.cz - ", "");
 };
@@ -21,11 +18,5 @@ const addLoader = () => {
 };
 
 addLoader();
-chrome.runtime.sendMessage({ type: MessageType.GET_SETTINGS }, function (settings: ExtensionSettings) {
-    if (settings === undefined) {
-        throw new Error("Did not receive settings from background script");
-    }
-
-    setTitle();
-    setTimeout(setFavicon, 0);
-});
+setTitle();
+setTimeout(setFavicon, 0);

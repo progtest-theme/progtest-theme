@@ -31,11 +31,11 @@
     }
 
     :global(body.dark) main {
-        --quiz-border: #505050;
+        --quiz-border: #313131;
         --quiz-text: #eee;
         --quiz-muted: #aaa;
         --quiz-accent: #b0bec5;
 
-        background: #2d2d2d;
+        background: #0e0e0e;
     }
 </style>

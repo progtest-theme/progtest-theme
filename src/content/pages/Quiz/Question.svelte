@@ -13,7 +13,9 @@
         answers,
         references,
         overview,
-        save
+        save,
+        saveAndPrevious,
+        saveAndNext
     }: {
         previous?: HTMLAnchorElement | null;
         next?: HTMLAnchorElement | null;
@@ -24,33 +26,82 @@
         references: HTMLAnchorElement[];
         overview: HTMLAnchorElement;
         save?: HTMLInputElement | null;
+        saveAndPrevious?: () => Promise<void>;
+        saveAndNext?: () => Promise<void>;
     } = $props();
+
+    let saving = $state(false);
+    let saveError = $state("");
+
+    function appendNavigation(
+        element: HTMLElement,
+        navigation: { link?: HTMLAnchorElement | null; save?: () => Promise<void> }
+    ) {
+        const link = navigation.link;
+        const save = navigation.save;
+        if (!link) return;
+        element.append(link);
+        if (!save) return;
+        async function handleClick(event: MouseEvent) {
+            event.preventDefault();
+            if (saving) return;
+            saving = true;
+            saveError = "";
+            const label = link.textContent;
+            link.textContent = "Ukládám…";
+            link.setAttribute("aria-disabled", "true");
+            try {
+                await save();
+            } catch (error) {
+                saveError = error instanceof Error ? error.message : "Odpověď se nepodařilo uložit. Zkuste to znovu.";
+            } finally {
+                saving = false;
+                link.textContent = label;
+                link.removeAttribute("aria-disabled");
+            }
+        }
+        link.addEventListener("click", handleClick);
+        return { destroy: () => link.removeEventListener("click", handleClick) };
+    }
 </script>
 
 <Layout>
     <div class="navigation">
-        <div class="previous" use:appendNodes={previous ? [previous] : []}></div>
+        <div class="previous" aria-busy={saving} use:appendNavigation={{ link: previous, save: saveAndPrevious }}></div>
         <span class="position">{position}</span>
-        <div class="next" use:appendNodes={next ? [next] : []}></div>
+        <div class="next" aria-busy={saving} use:appendNavigation={{ link: next, save: saveAndNext }}></div>
     </div>
+    {#if saveError}
+        <p class="save-error" role="alert">{saveError}</p>
+    {/if}
     {#if deadline}
         <Deadline data={deadline} />
     {/if}
     <section class="prompt" use:appendNodes={prompt}></section>
     <div class="answers">
-        {#each answers as answer}
+        {#each answers as answer (answer)}
             {#if answer.choice}
                 <!-- svelte-ignore a11y_label_has_associated_control -->
-                <label class="answer" use:appendNodes={answer.nodes}></label>
+                <label
+                    class="answer"
+                    class:correct={answer.result === "correct"}
+                    class:incorrect={answer.result === "incorrect"}
+                    use:appendNodes={answer.nodes}
+                ></label>
             {:else}
-                <div class="answer" use:appendNodes={answer.nodes}></div>
+                <div
+                    class="answer"
+                    class:correct={answer.result === "correct"}
+                    class:incorrect={answer.result === "incorrect"}
+                    use:appendNodes={answer.nodes}
+                ></div>
             {/if}
         {/each}
     </div>
     <footer>
         <div class="references">
             <span use:appendNodes={[overview]}></span>
-            {#each references as reference}
+            {#each references as reference (reference)}
                 <span use:appendNodes={[reference]}></span>
             {/each}
         </div>
@@ -79,6 +130,14 @@
 
     .next {
         text-align: right;
+    }
+
+    .save-error {
+        margin: 16px 20px;
+        padding: 12px 16px;
+        border: 1px solid #d32f2f;
+        border-radius: 4px;
+        background: rgb(244 67 54 / 0.16);
     }
 
     .prompt {
@@ -120,27 +179,79 @@
     }
 
     label.answer {
-        padding-left: 48px;
+        padding-left: 54px;
         cursor: pointer;
     }
 
-    label.answer:hover {
+    label.answer:has(:global(input:enabled)):hover {
         background: rgb(128 128 128 / 0.1);
     }
 
-    label.answer:has(:global(input:checked)) {
+    label.answer:not(.correct, .incorrect):has(:global(input:checked)) {
         border-color: #607d8b;
         background: rgb(96 125 139 / 0.12);
     }
 
     label.answer :global(input) {
+        appearance: none;
+        box-sizing: border-box;
         position: absolute;
-        top: 18px;
+        top: 16px;
         left: 16px;
-        width: 18px;
-        height: 18px;
+        width: 24px;
+        height: 24px;
         margin: 0;
-        accent-color: #607d8b;
+        border: 2px solid #757575;
+        border-radius: 4px;
+        background: #fff;
+        opacity: 1;
+        cursor: inherit;
+    }
+
+    label.answer :global(input[type="radio"]) {
+        border-radius: 50%;
+    }
+
+    label.answer :global(input:checked) {
+        border-color: #2563eb;
+        background: #2563eb;
+    }
+
+    label.answer :global(input:checked)::after {
+        content: "";
+        display: block;
+        position: absolute;
+    }
+
+    label.answer :global(input[type="radio"]:checked)::after {
+        inset: 5px;
+        border-radius: 50%;
+        background: #fff;
+    }
+
+    label.answer :global(input[type="checkbox"]:checked)::after {
+        top: 2px;
+        left: 6px;
+        width: 6px;
+        height: 11px;
+        border: solid #fff;
+        border-width: 0 3px 3px 0;
+        transform: rotate(45deg);
+    }
+
+    label.answer :global(input:focus-visible) {
+        outline: 3px solid #2563eb;
+        outline-offset: 4px;
+    }
+
+    :global(body.dark) label.answer :global(input) {
+        border-color: #aaa;
+        background: #252525;
+    }
+
+    :global(body.dark) label.answer :global(input:checked) {
+        border-color: #93c5fd;
+        background: #2563eb;
     }
 
     .answer :global(input:not([type="radio"], [type="checkbox"])),
@@ -152,12 +263,24 @@
         font: inherit;
     }
 
-    .answer :global(.redBox),
-    .answer :global(.greenBox) {
-        position: absolute;
-        top: 18px;
-        right: 8px;
-        left: auto;
+    .answer.correct {
+        border-color: #388e3c;
+        background: rgb(76 175 80 / 0.16);
+    }
+
+    .answer.incorrect {
+        border-color: #d32f2f;
+        background: rgb(244 67 54 / 0.16);
+    }
+
+    :global(body.dark) .answer.correct {
+        border-color: #66bb6a;
+        background: rgb(76 175 80 / 0.22);
+    }
+
+    :global(body.dark) .answer.incorrect {
+        border-color: #ef5350;
+        background: rgb(244 67 54 / 0.22);
     }
 
     footer {

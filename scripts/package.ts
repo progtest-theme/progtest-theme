@@ -40,8 +40,8 @@ async function signFirefox() {
 }
 
 async function packChrome(useSystemUtilities: boolean) {
-    cp(CHROME_MANIFEST, MANIFEST_TARGET);
-    pack(CHROME_DIST_DIR, useSystemUtilities);
+    await cp(CHROME_MANIFEST, MANIFEST_TARGET);
+    await pack(CHROME_DIST_DIR, useSystemUtilities);
 }
 
 async function main() {

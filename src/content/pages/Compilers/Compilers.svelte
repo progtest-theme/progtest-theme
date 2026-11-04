@@ -5,11 +5,11 @@
 </script>
 
 <main>
-    {#each groups as group}
+    {#each groups as group (group)}
         <details open={group.open}>
             <summary>{group.name}</summary>
             <div class="actions">
-                {#each group.actions as action}
+                {#each group.actions as action (action)}
                     <a href={action.link}>
                         <img src={action.icon} alt="" />
                         {action.name}
@@ -39,8 +39,8 @@
 
     :global(body.dark) details {
         border-color: #313131;
-        background: #2d2d2d;
-        color: #fff;
+        background: #0e0e0e;
+        color: #eee;
     }
 
     summary {
@@ -73,6 +73,10 @@
 
     :global(body.dark) a {
         color: inherit;
+    }
+
+    :global(body.dark) a:hover {
+        background: #242424;
     }
 
     a + a {

@@ -69,8 +69,8 @@
 
     :global(body.dark) main {
         border-color: #313131;
-        background: #2d2d2d;
-        color: #fff;
+        background: #0e0e0e;
+        color: #eee;
     }
 
     input.std {

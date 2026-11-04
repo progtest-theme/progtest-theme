@@ -1,6 +1,5 @@
 import { pttLoadedEvent } from "../events";
-import { MessageType } from "../messages";
-import { type ExtensionSettings, ThemeMode } from "../settings.ts";
+import { DEFAULT_SETTINGS, type ExtensionSettings, ThemeMode } from "../settings.ts";
 
 import Pages, { ErrorPage, Logged, LoginPage, Main } from "./pages";
 
@@ -78,9 +77,16 @@ const replaceStyles = (settings: ExtensionSettings) => {
     });
 };
 
-chrome.runtime.sendMessage({ type: MessageType.GET_SETTINGS }, async (settings: ExtensionSettings) => {
-    await replaceStyles(settings);
-    await main(settings);
+async function initialise() {
+    try {
+        const settings = await chrome.storage.local.get<ExtensionSettings>(DEFAULT_SETTINGS);
+        await replaceStyles(settings);
+        await main(settings);
+    } catch (error) {
+        console.error("Failed to initialise ProgTest Themes", error);
+    } finally {
+        document.dispatchEvent(pttLoadedEvent);
+    }
+}
 
-    document.dispatchEvent(pttLoadedEvent);
-});
+void initialise();
